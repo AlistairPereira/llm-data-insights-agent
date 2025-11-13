@@ -47,29 +47,29 @@ def run_agent(file_path: str) -> None:
     7. Display and save insights
     """
 
-    print(f"📂 Loading dataset: {file_path}")
+    print(f"Loading dataset: {file_path}")
     df_raw = load_dataset(file_path)
-    print(f"✅ Loaded dataset with shape: {df_raw.shape}")
+    print(f"Loaded dataset with shape: {df_raw.shape}")
 
     print("🧹 Cleaning dataset ...")
     df_clean = basic_cleaning(df_raw)
 
-    print("📊 Generating EDA summary ...")
+    print("Generating EDA summary ...")
     eda = quick_eda_summary(df_clean)
 
-    print("📈 Creating histograms ...")
+    print("Creating histograms ...")
     os.makedirs("outputs", exist_ok=True)
     hist_path = plot_numeric_hist(df_clean)
 
     if hist_path:
-        print(f"✅ Saved histograms to: {hist_path}")
+        print(f"Saved histograms to: {hist_path}")
     else:
         print("ℹ No numeric columns found to plot.")
 
     # Build the LLM prompt
     prompt = build_analysis_prompt(eda, file_path)
 
-    print("🧠 Querying local LLM (Ollama llama3.2) ...")
+    print("Querying local LLM (Ollama llama3.2) ...")
     insights = run_llm(prompt)
 
     print("\n================= 📌 LLM Insights =================\n")
@@ -80,7 +80,7 @@ def run_agent(file_path: str) -> None:
     with open("outputs/insights.txt", "w", encoding="utf-8") as f:
         f.write(insights)
 
-    print("📝 Insights saved to outputs/insights.txt")
+    print("Insights saved to outputs/insights.txt")
 
 
 if __name__ == "__main__":
