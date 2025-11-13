@@ -1,0 +1,31 @@
+Here are the key points about the dataset:
+
+**Dataset Description:**
+
+* Shape: The dataset has 205 rows and 15 columns.
+* Data Types:
+	+ Integer columns: symboling, city-mpg, highway-mpg, engine-size, price
+	+ Float columns: width, height, horsepower, normalized-losses (some values are not numeric)
+	+ Object/Category columns: make, fuel-type, body-style, drive-wheels, engine-location, engine-type
+
+**Data Quality:**
+
+* Missing Values: Overall, the dataset has a very low percentage of missing values, with most columns having 0% missing.
+* Potential Issues:
+	+ The 'horsepower' column is an object type, which may indicate that it contains non-numeric or non-standard values. This could be a source of error or inaccuracy.
+
+**Important Numeric Insights:**
+
+* Average Price: The average price of the cars is around $13,227.
+* Engine Size Distribution:
+	+ The median engine size is 120.0 (in liters).
+	+ There is a large range in engine sizes, from 61.0 to 326.0 liters.
+* Fuel Type:
+	+ Gasoline is the most common fuel type, making up around 93% of cars.
+
+**Follow-up Business Analyses or Questions:**
+
+1. What are the average prices of different make models? How do they compare to the overall average price?
+2. Are there any significant correlations between engine size and other variables such as horsepower, city-mpg, or highway-mpg?
+3. Can we identify which cars are more likely to be involved in accidents based on the 'normalized-losses' values?
+
