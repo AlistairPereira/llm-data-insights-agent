@@ -72,7 +72,7 @@ def run_agent(file_path: str) -> None:
     print("Querying local LLM (Ollama llama3.2) ...")
     insights = run_llm(prompt)
 
-    print("\n================= 📌 LLM Insights =================\n")
+    print("\n=================  LLM Insights =================\n")
     print(insights)
     print("===================================================\n")
 
