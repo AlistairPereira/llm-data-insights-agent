@@ -24,7 +24,7 @@ def build_model_prompt(
     """
     Build a prompt that combines:
     - EDA summary
-    - Model type + metrics
+    - Model type + metrics + feature importance
     and asks the LLM to explain everything.
     """
     return f"""
@@ -44,8 +44,9 @@ Using ONLY this information:
 1. Briefly summarize the dataset and the chosen target.
 2. Explain whether this is a regression or classification problem and why.
 3. Interpret the model performance metrics in simple terms.
-4. Highlight 3–5 key insights or potential issues (data quality, signal strength, overfitting/underfitting).
-5. Suggest 3 concrete next steps to improve the model or analysis.
+4. Comment on the target missing percentage and what it implies.
+5. Explain which features appear most important for the model and why that makes sense.
+6. Suggest 3 concrete next steps to improve the model or analysis.
 
 Answer in clear bullet points.
     """
@@ -59,7 +60,7 @@ def run_model_agent(file_path: str, target_col: str | None = None) -> None:
     3. Choose / validate target column.
     4. Prepare features + target (encoding, scaling).
     5. Train model (regression or classification).
-    6. Evaluate model and build a model_report dict.
+    6. Evaluate model and compute feature importance & target missing %.
     7. Ask LLM for a combined EDA + model explanation.
     """
 
@@ -80,7 +81,7 @@ def run_model_agent(file_path: str, target_col: str | None = None) -> None:
 
     # 4) Prepare features and target
     print("[Model Agent] Preparing features and target ...")
-    X, y, problem_type, ord_encoder, label_encoder = prepare_features_and_target(
+    X, y, problem_type, ord_encoder, label_encoder, feature_names = prepare_features_and_target(
         df, target_col_final
     )
     print(f"[Model Agent] Inferred problem type: {problem_type}")
@@ -93,11 +94,30 @@ def run_model_agent(file_path: str, target_col: str | None = None) -> None:
     print("[Model Agent] Evaluating model ...")
     metrics = evaluate_model(y_test, y_pred, problem_type)
 
+    # 6a) Compute real target missing percentage
+    target_missing_pct = float(df[target_col_final].isna().mean() * 100.0)
+
+    # 6b) Compute feature importances (top 10) if model supports it
+    top_feature_importances: dict[str, float] = {}
+    if hasattr(model, "feature_importances_"):
+        importances = model.feature_importances_
+        pairs = sorted(
+            zip(feature_names, importances),
+            key=lambda x: x[1],
+            reverse=True
+        )
+        top_pairs = pairs[:10]
+        top_feature_importances = {
+            name: round(score, 3) for name, score in top_pairs
+        }
+
     # Build a unified model_report dict
     model_report = {
         "problem_type": metrics.get("type", problem_type),
         "target_column": target_col_final,
+        "target_missing_percent": round(target_missing_pct, 2),
         "metrics": metrics,
+        "top_feature_importances": top_feature_importances,
     }
 
     # 7) Build prompt and ask LLM for combined explanation
@@ -111,7 +131,7 @@ def run_model_agent(file_path: str, target_col: str | None = None) -> None:
     print("[Model Agent] Querying local LLM (Ollama llama3.2) for model insights ...")
     insights = run_llm(prompt)
 
-    print("\n================= MODEL LLM Insights =================\n")
+    print("\n=================  MODEL LLM Insights =================\n")
     print(insights)
     print("=========================================================\n")
 
@@ -120,7 +140,7 @@ def run_model_agent(file_path: str, target_col: str | None = None) -> None:
     with open("outputs/model_insights.txt", "w", encoding="utf-8") as f:
         f.write(insights)
 
-    print("📝 [Model Agent] Model insights saved to outputs/model_insights.txt")
+    print("[Model Agent] Model insights saved to outputs/model_insights.txt")
 
 
 if __name__ == "__main__":

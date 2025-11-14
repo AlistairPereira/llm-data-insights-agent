@@ -1,4 +1,4 @@
-# tools_models.py
+# tools_model.py
 
 import pandas as pd
 from typing import Tuple, Dict, Any, Optional
@@ -17,25 +17,22 @@ from sklearn.metrics import (
 def choose_target_column(df: pd.DataFrame, target_col: Optional[str] = None) -> str:
     """
     If the user provides a target column, validate it.
-    Otherwise, default to the last column in the dataframe.
+    Otherwise default to the last column.
     """
     if target_col is not None:
         if target_col not in df.columns:
             raise ValueError(f"Target column '{target_col}' not found in dataframe.")
         return target_col
 
-    # Fallback: use the last column as the target
-    return df.columns[-1]
+    return df.columns[-1]  # fallback default
 
 
 def infer_problem_type(y: pd.Series) -> str:
     """
-    Decide whether this is a regression or classification problem.
-
-    - If the target is non-numeric  -> classification
-    - If the target is numeric:
-        - If it has few unique values (<= 10) -> classification (like 0/1/2 labels)
-        - Else                               -> regression
+    Determine whether target is regression or classification.
+    - Non-numeric target → classification
+    - Numeric with ≤ 10 unique values → classification
+    - Numeric with many values → regression
     """
     if not pd.api.types.is_numeric_dtype(y):
         return "classification"
@@ -48,21 +45,22 @@ def infer_problem_type(y: pd.Series) -> str:
 
 def prepare_features_and_target(
     df: pd.DataFrame, target_col: str
-) -> Tuple[Any, Any, str, Optional[OrdinalEncoder], Optional[LabelEncoder]]:
+) -> Tuple[pd.DataFrame, Any, str, Optional[OrdinalEncoder], Optional[LabelEncoder], list[str]]:
     """
     Prepare X (features) and y (target) for modeling:
-
     1. Split df into X and y
-    2. Infer problem type (regression / classification)
-    3. Encode target for classification using LabelEncoder
-    4. Ordinal-encode categorical features
-    5. Scale ONLY numeric features using StandardScaler
+    2. Infer regression/classification
+    3. Encode target (LabelEncoder) for classification
+    4. Ordinal encode categorical features
+    5. Scale ONLY numeric columns
+    6. Return X (DataFrame) + feature names
     """
-    # Split features and target
+
+    # Separate features and target
     X = df.drop(columns=[target_col])
     y = df[target_col]
 
-    # Decide if regression vs classification
+    # Determine problem type
     problem_type = infer_problem_type(y)
 
     # Encode target for classification
@@ -77,32 +75,27 @@ def prepare_features_and_target(
     cat_cols = X.select_dtypes(include=["object", "category"]).columns
     num_cols = X.select_dtypes(include="number").columns
 
-    # Ordinal encode categorical features (turn them into numbers)
+    # Ordinal encode categorical columns
     ord_encoder: Optional[OrdinalEncoder] = None
     if len(cat_cols) > 0:
         ord_encoder = OrdinalEncoder()
         X[cat_cols] = ord_encoder.fit_transform(X[cat_cols].astype(str))
 
-    # Scale ONLY numeric features
+    # Scale ONLY numeric columns
     if len(num_cols) > 0:
         scaler = StandardScaler()
         X[num_cols] = scaler.fit_transform(X[num_cols])
 
-    # Return numpy array for X, processed y, and encoders/problem type
-    return X.values, y_processed, problem_type, ord_encoder, label_encoder
+    # Save feature names for feature importance
+    feature_names = list(X.columns)
+
+    return X, y_processed, problem_type, ord_encoder, label_encoder, feature_names
 
 
-def train_model(
-    X, y, problem_type: str
-) -> Tuple[Any, Any, Any]:
+def train_model(X, y, problem_type: str):
     """
-    Train a simple baseline model:
-
-    - regression     -> RandomForestRegressor
-    - classification -> RandomForestClassifier
-
-    Returns:
-        model, y_test, y_pred
+    Train either a RandomForestRegressor or RandomForestClassifier.
+    Returns model, y_test, y_pred.
     """
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
@@ -123,11 +116,11 @@ def evaluate_model(
     y_true, y_pred, problem_type: str
 ) -> Dict[str, Any]:
     """
-    Evaluate the model based on the problem type and
-    return a clean dictionary with metrics for the LLM.
+    Compute evaluation metrics and return as dictionary.
     """
+
     if problem_type == "regression":
-        # Older sklearn versions don't support squared=False, so compute RMSE manually
+        # Manual RMSE (old sklearn does not support squared=False)
         mse = mean_squared_error(y_true, y_pred)
         rmse = mse ** 0.5
         r2 = r2_score(y_true, y_pred)
@@ -138,7 +131,7 @@ def evaluate_model(
             "n_test_samples": len(y_true),
         }
 
-    # classification
+    # Classification metrics
     acc = accuracy_score(y_true, y_pred)
     f1 = f1_score(y_true, y_pred, average="weighted")
     return {
