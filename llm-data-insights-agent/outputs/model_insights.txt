@@ -1,0 +1,20 @@
+Here are the answers:
+
+• **Dataset Summary and Target**: The dataset contains information about cars, with a total of 205 samples, including features such as make, fuel type, engine size, horsepower, city and highway MPG, and price. The chosen target column for prediction is "price".
+
+• **Problem Type**: This is a regression problem because the target variable ("price") is continuous and numerical.
+
+• **Model Performance Metrics**:
+  • RMSE (Root Mean Squared Error): represents how far off predictions are from actual values on average.
+  • R2 (Coefficient of Determination): measures how well the model fits the data, with higher values indicating better fit. An R2 value of 0.873 suggests that the model is able to explain approximately 87% of the variability in the target variable.
+
+• **Key Insights and Potential Issues**:
+  • **High RMSE**: The relatively high RMSE value indicates that the model has difficulty accurately predicting prices for individual cars, suggesting potential issues with signal strength or data quality.
+  • **Low R2**: While an R2 value of 0.873 is respectable, it may indicate some overfitting or underfitting in the model, particularly if the data distribution is complex.
+  • **Sparse target values**: The high number of missing values (47% on average) in the "price" column raises concerns about data quality and potential biases.
+
+• **Concrete Next Steps**:
+  • Collect more data to improve signal strength and potentially reduce overfitting/underfitting issues.
+  • Clean and preprocess the data, focusing on handling missing values and outliers effectively.
+  • Explore feature engineering techniques or transformations that can help improve model performance, particularly if the current features do not capture enough information about the target variable.
+

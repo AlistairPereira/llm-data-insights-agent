@@ -1,0 +1,26 @@
+Here are the answers to your questions:
+
+• **Dataset Description:**
+	+ Number of rows: 205
+	+ Number of columns: 12 (symboling, normalized-losses, make, fuel-type, body-style, drive-wheels, engine-location, width, height, engine-type, engine-size, horsepower, city-mpg, highway-mpg, price)
+	+ Data types:
+		- Integers: symboling, engine-size, city-mpg, highway-mpg, price
+		- Floats: width, height
+		- Strings (objects): normalized-losses, make, fuel-type, body-style, drive-wheels, engine-location, engine-type
+
+• **Data Quality:**
+	+ The dataset has a relatively low percentage of missing values (0% on average).
+	+ There are no apparent outliers or issues with data types.
+
+• **Important Numeric Insights:**
+
+	+ The most expensive cars in the dataset have a price range of $45,400 to $51,182.
+	+ Cars tend to get better fuel efficiency on highways than on city streets (average highway MPG is 30.75 vs. 25.22).
+	+ Most cars in the dataset are gas-powered (185/205), with only 20 being diesel-powered.
+
+• **Follow-up Analyses or Questions:**
+
+	+ What is the relationship between car price and horsepower? Are high-performance cars more expensive?
+	+ How does engine size impact fuel efficiency? Are there any significant differences between smaller and larger engines?
+	+ Can we identify any correlations between car make and fuel type (e.g., do Toyota and Honda tend to be gas-powered, while Nissan is diesel-powered)?
+
