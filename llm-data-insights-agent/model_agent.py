@@ -131,7 +131,7 @@ def run_model_agent(file_path: str, target_col: str | None = None) -> None:
     print("[Model Agent] Querying local LLM (Ollama llama3.2) for model insights ...")
     insights = run_llm(prompt)
 
-    print("\n=================  MODEL LLM Insights =================\n")
+    print("\n================= MODEL LLM Insights =================\n")
     print(insights)
     print("=========================================================\n")
 
