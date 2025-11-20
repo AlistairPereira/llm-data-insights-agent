@@ -6,6 +6,7 @@ import json
 from llm_local import run_llm
 from eda_agent import run_eda_agent
 from model_agent import run_model_agent
+from unsupervised_model_agent import run_unsupervised_agent
 
 
 def build_router_prompt(user_message: str) -> str:
@@ -18,24 +19,45 @@ You are a routing assistant for a data analysis system.
 
 The user will describe what they want to do with a dataset.
 
-You have access to two tools:
+You have access to three high-level tools:
 
-1) "eda"   - Run exploratory data analysis (EDA) on a CSV file.
-2) "model" - Train and evaluate a machine learning model on a CSV file.
+1) "eda"          - Run exploratory data analysis (EDA) on a CSV file.
+2) "model"        - Train and evaluate a supervised ML model on a CSV file (needs target column).
+3) "unsupervised" - Run an unsupervised analysis (PCA or clustering) on a CSV file.
 
 Your job:
 - Read the user message.
-- Decide which single action to take: "eda" or "model".
-- Extract the file path mentioned by the user (for example: "sample_data/cars.csv").
-- Optionally, if the user mentions a target column (like "price"), include it.
-- If no target column is mentioned and action is "model", set target_column to null.
+- Decide which single action to take: "eda", "model", or "unsupervised".
+- Extract the file path mentioned by the user (e.g. "sample_data/cars.csv").
+- If the user clearly mentions a target column (like "price") for supervised modeling, set "target_column" accordingly.
+- If the user does not mention any target and the action is "model", set "target_column" to null.
+
+For UNSUPERVISED analysis:
+- Infer which algorithm to use from the user's message:
+    * "pca", "principal components", "dimensionality reduction" → algorithm = "pca"
+    * "kmeans", "k-means", "cluster into X groups", "segment into X clusters" → algorithm = "kmeans"
+    * "dbscan" or "density-based clustering" → algorithm = "dbscan"
+    * "hierarchical", "agglomerative" → algorithm = "agglomerative"
+- If user mentions number of components (e.g. "2D", "2 components") → set n_components.
+- If user mentions number of clusters (e.g. "3 clusters", "cluster into 3 groups") → set n_clusters.
+- If user mentions eps or radius for DBSCAN → set eps.
+- If user mentions min_samples for DBSCAN → set min_samples.
+- If user mentions linkage for hierarchical ("ward", "complete", "average", "single") → set linkage.
+- If something is not mentioned, set it to null.
 
 Return ONLY a single JSON object with this structure:
 
 {{
-  "action": "eda" or "model",
+  "action": "eda" | "model" | "unsupervised",
   "file_path": "<path_to_csv>",
-  "target_column": "<name or null>"
+  "target_column": "<name or null>",
+
+  "algorithm": "<pca | kmeans | dbscan | agglomerative | null>",
+  "n_components": <int or null>,
+  "n_clusters": <int or null>,
+  "eps": <float or null>,
+  "min_samples": <int or null>,
+  "linkage": "<string or null>"
 }}
 
 User message:
@@ -66,7 +88,7 @@ def route_user_request(user_message: str) -> None:
 
         route = json.loads(json_str)
     except Exception as e:
-        print("[Router] Failed to parse routing JSON:", e)
+        print("[Router]  Failed to parse routing JSON:", e)
         print("[Router] Aborting.")
         return
 
@@ -74,36 +96,99 @@ def route_user_request(user_message: str) -> None:
     file_path = route.get("file_path")
     target_col = route.get("target_column")
 
+    algorithm = route.get("algorithm")
+    n_components = route.get("n_components")
+    n_clusters = route.get("n_clusters")
+    eps = route.get("eps")
+    min_samples = route.get("min_samples")
+    linkage = route.get("linkage")
+
     print(f"[Router] Parsed action: {action}")
     print(f"[Router] File path: {file_path}")
     print(f"[Router] Target column: {target_col}")
+    print(f"[Router] Algorithm: {algorithm}")
+    print(f"[Router] n_components: {n_components}")
+    print(f"[Router] n_clusters: {n_clusters}")
+    print(f"[Router] eps: {eps}")
+    print(f"[Router] min_samples: {min_samples}")
+    print(f"[Router] linkage: {linkage}")
 
     if not file_path:
         print("[Router] No file_path provided in routing output. Aborting.")
         return
 
+    # Normalize possible "null"/"none" strings to None
+    def _normalize(value):
+        if isinstance(value, str) and value.lower() in ("null", "none", ""):
+            return None
+        return value
+
+    target_col = _normalize(target_col)
+    algorithm = _normalize(algorithm)
+    n_components = _normalize(n_components)
+    n_clusters = _normalize(n_clusters)
+    eps = _normalize(eps)
+    min_samples = _normalize(min_samples)
+    linkage = _normalize(linkage)
+
+    # Convert numeric fields if they are not None and are strings
+    def _to_int(val):
+        try:
+            return int(val)
+        except Exception:
+            return None
+
+    def _to_float(val):
+        try:
+            return float(val)
+        except Exception:
+            return None
+
+    n_components = _to_int(n_components) if n_components is not None else None
+    n_clusters = _to_int(n_clusters) if n_clusters is not None else None
+    eps = _to_float(eps) if eps is not None else None
+    min_samples = _to_int(min_samples) if min_samples is not None else None
+
+    # Route based on action
     if action == "eda":
         print("[Router] Calling EDA Agent ...")
         run_eda_agent(file_path, use_llm=True)
 
     elif action == "model":
         print("[Router] Calling Model Agent ...")
-        # If target_col is null in JSON, Python sees None
-        if isinstance(target_col, str) and target_col.lower() in ("null", "none", ""):
-            target_col = None
         run_model_agent(file_path, target_col=target_col)
 
+    elif action == "unsupervised":
+        print("[Router] Calling Unsupervised Agent ...")
+
+        if not algorithm:
+            print("[Router] No algorithm specified for unsupervised analysis. Defaulting to 'kmeans'.")
+            algorithm = "kmeans"
+
+        run_unsupervised_agent(
+            file_path=file_path,
+            algo=algorithm,
+            n_components=n_components,
+            n_clusters=n_clusters,
+            eps=eps,
+            min_samples=min_samples,
+            linkage=linkage,
+        )
     else:
         print(f"[Router] Unknown action '{action}'. Aborting.")
 
 
 if __name__ == "__main__":
-    # Usage:
+    # Usage examples:
     #   python router_agent.py "do EDA on sample_data/cars.csv"
     #   python router_agent.py "train a model on sample_data/cars.csv to predict price"
+    #   python router_agent.py "run kmeans with 3 clusters on sample_data/cars.csv"
+    #   python router_agent.py "run PCA with 2 components on sample_data/cars.csv"
     if len(sys.argv) < 2:
-        print("Usage: python router_agent.py \"<your_request_here>\"")
+        print('Usage: python router_agent.py "<your_request_here>"')
         sys.exit(1)
 
     user_msg = " ".join(sys.argv[1:])
     route_user_request(user_msg)
+
+

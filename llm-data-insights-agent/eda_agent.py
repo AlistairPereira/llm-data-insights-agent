@@ -1,3 +1,4 @@
+
 # eda_agent.py
 
 import sys
@@ -9,6 +10,9 @@ from tools_data import (
     basic_cleaning,
     quick_eda_summary,
     plot_numeric_hist,
+    compute_correlations,
+    plot_corr_heatmap,
+    detect_outliers_iqr,
 )
 from llm_local import run_llm
 
@@ -16,24 +20,27 @@ from llm_local import run_llm
 def build_eda_prompt(eda_summary: dict, file_path: str) -> str:
     """
     Prompt for EDA insights only. This is sent to the local LLM (Ollama).
+    Now also explicitly asks about correlations and outliers.
     """
     return f"""
 You are a senior data analyst.
 
 You are analyzing a dataset from the file: {file_path}
 
-Below is the EDA summary in JSON format:
+Below is the EDA summary in JSON format (including correlations and outlier information):
 {json.dumps(eda_summary, indent=2)}
 
 Using ONLY this information:
 
 1. Briefly describe the dataset (rows, columns, and data types).
-2. Comment on data quality (missing values or issues).
-3. Highlight 3–5 important numeric insights (trends, ranges, correlations).
-4. Suggest 3 follow-up analyses or questions.
+2. Comment on data quality (missing values, outliers, and any potential issues).
+3. Highlight 3–5 important numeric insights (trends, ranges, and correlations between key variables).
+4. Mention any notable outliers (which columns they appear in and what they might imply).
+5. Suggest 3 follow-up analyses or questions that could help explore the data further.
 
 Provide the answer in clear bullet points.
     """
+
 
 
 def run_eda_agent(file_path: str, use_llm: bool = True) -> dict:
@@ -41,8 +48,8 @@ def run_eda_agent(file_path: str, use_llm: bool = True) -> dict:
     EDA Agent:
     1. Load dataset
     2. Clean data
-    3. Compute EDA summary
-    4. Generate histograms
+    3. Compute EDA summary (+ correlations)
+    4. Generate histograms + correlation heatmap
     5. (Optional) Ask LLM for EDA insights
     6. RETURN the EDA summary dict for other agents (e.g., model_agent)
     """
@@ -57,6 +64,16 @@ def run_eda_agent(file_path: str, use_llm: bool = True) -> dict:
     print("[EDA Agent] Generating EDA summary ...")
     eda = quick_eda_summary(df_clean)
 
+    #   compute correlations and add into EDA summary
+    print("[EDA Agent] Computing correlations ...")
+    corr_info = compute_correlations(df_clean)
+    eda["correlations"] = corr_info
+    
+    #  detect outliers on numeric columns (IQR-based)
+    print("[EDA Agent] Detecting outliers (IQR method) ...")
+    outlier_info = detect_outliers_iqr(df_clean, multiplier=1.5)
+    eda["outliers"] = outlier_info
+
     print("[EDA Agent] Creating histograms ...")
     os.makedirs("outputs", exist_ok=True)
     hist_path = plot_numeric_hist(df_clean)
@@ -64,6 +81,14 @@ def run_eda_agent(file_path: str, use_llm: bool = True) -> dict:
         print(f"[EDA Agent] Saved histograms to: {hist_path}")
     else:
         print("ℹ [EDA Agent] No numeric columns found to plot.")
+
+    #  NEW: correlation heatmap
+    print("[EDA Agent] Creating correlation heatmap ...")
+    corr_path = plot_corr_heatmap(df_clean)
+    if corr_path:
+        print(f"[EDA Agent] Saved correlation heatmap to: {corr_path}")
+    else:
+        print("ℹ [EDA Agent] No numeric columns found for correlation heatmap.")
 
     if use_llm:
         prompt = build_eda_prompt(eda, file_path)
@@ -79,7 +104,7 @@ def run_eda_agent(file_path: str, use_llm: bool = True) -> dict:
         print("[EDA Agent] EDA insights saved to outputs/eda_insights.txt")
 
     # KEY FOR MULTI-AGENT SETUP:
-    #return the summary so model_agent can use it
+    # return the summary so other agents can use it
     return eda
 
 
@@ -91,3 +116,5 @@ if __name__ == "__main__":
 
     csv_path = sys.argv[1]
     run_eda_agent(csv_path, use_llm=True)
+
+

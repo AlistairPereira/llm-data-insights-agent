@@ -17,38 +17,56 @@ from llm_local import run_llm
 
 def build_model_prompt(
     file_path: str,
-    target_col: str,
+    target_column: str | None,
+    problem_type: str,
     eda_summary: dict,
     model_report: dict,
 ) -> str:
     """
-    Build a prompt that combines:
-    - EDA summary
-    - Model type + metrics + feature importance
-    and asks the LLM to explain everything.
+    Prompt for supervised model explanation.
+
+    - eda_summary includes correlations + outliers
+    - model_report includes metrics, feature_importances, target_missing_pct, etc.
     """
     return f"""
 You are a senior data scientist.
 
-You are analyzing a dataset from file: {file_path}
-The chosen target column for prediction is: {target_col}
+You are analyzing a dataset from the file: {file_path}
+The supervised learning task uses target column: {target_column}
+The problem type is: {problem_type} (regression or classification).
 
-Here is the EDA summary (JSON):
+Here is the EDA summary in JSON (includes correlations and outlier info):
 {json.dumps(eda_summary, indent=2)}
 
-Here is the model evaluation report (JSON):
+Here is the model report in JSON (includes metrics, feature importance, and target missing percentage):
 {json.dumps(model_report, indent=2)}
 
 Using ONLY this information:
 
-1. Briefly summarize the dataset and the chosen target.
-2. Explain whether this is a regression or classification problem and why.
-3. Interpret the model performance metrics in simple terms.
-4. Comment on the target missing percentage and what it implies.
-5. Explain which features appear most important for the model and why that makes sense.
-6. Suggest 3 concrete next steps to improve the model or analysis.
+1. Briefly summarize:
+   - What the dataset looks like (rows, columns, key data types).
+   - What the target column represents and why this is a {problem_type} problem.
 
-Answer in clear bullet points.
+2. Explain the model performance:
+   - For regression, clearly report metrics like RMSE and R².
+   - For classification, clearly report metrics like accuracy, precision/recall/F1 if present.
+   - Comment on whether the performance seems good, moderate, or poor.
+
+3. Use EDA info (correlations + outliers) to interpret the model:
+   - Mention which features are most strongly correlated with the target.
+   - Discuss feature importances from the model and compare them with the correlations.
+   - Comment on outliers in the target or key features and how they might affect metrics.
+
+4. Provide practical insights:
+   - 3–5 concrete interpretations of what the model is telling us about the data.
+   - Examples: “higher engine-size and horsepower are associated with higher price”, etc.
+
+5. Suggest next steps:
+   - Possible feature engineering ideas.
+   - Handling outliers or skewed features.
+   - Model improvements (hyperparameter tuning, more data, different algorithms).
+
+Answer in clear bullet points and short paragraphs so a non-expert data stakeholder can understand.
     """
 
 
