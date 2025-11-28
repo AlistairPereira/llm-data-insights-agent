@@ -1,3 +1,5 @@
+
+
 # model_agent.py
 
 import sys
@@ -24,9 +26,6 @@ def build_model_prompt(
 ) -> str:
     """
     Prompt for supervised model explanation.
-
-    - eda_summary includes correlations + outliers
-    - model_report includes metrics, feature_importances, target_missing_pct, etc.
     """
     return f"""
 You are a senior data scientist.
@@ -59,10 +58,9 @@ Using ONLY this information:
 
 4. Provide practical insights:
    - 3–5 concrete interpretations of what the model is telling us about the data.
-   - Examples: “higher engine-size and horsepower are associated with higher price”, etc.
 
 5. Suggest next steps:
-   - Possible feature engineering ideas.
+   - Feature engineering ideas.
    - Handling outliers or skewed features.
    - Model improvements (hyperparameter tuning, more data, different algorithms).
 
@@ -70,16 +68,9 @@ Answer in clear bullet points and short paragraphs so a non-expert data stakehol
     """
 
 
-def run_model_agent(file_path: str, target_col: str | None = None) -> None:
+def run_model_agent(file_path: str, target_col: str | None = None, algo: str = "random_forest") -> None:
     """
-    Full pipeline for Agent 2:
-    1. Call EDA agent to get EDA summary (no LLM here).
-    2. Load the dataset.
-    3. Choose / validate target column.
-    4. Prepare features + target (encoding, scaling).
-    5. Train model (regression or classification).
-    6. Evaluate model and compute feature importance & target missing %.
-    7. Ask LLM for a combined EDA + model explanation.
+    Full pipeline for Agent 2.
     """
 
     print(f"[Model Agent] Starting modeling pipeline for: {file_path}")
@@ -99,14 +90,14 @@ def run_model_agent(file_path: str, target_col: str | None = None) -> None:
 
     # 4) Prepare features and target
     print("[Model Agent] Preparing features and target ...")
-    X, y, problem_type, ord_encoder, label_encoder, feature_names = prepare_features_and_target(
+    X, y, problem_type, cat_encoder, y_encoder, feature_names = prepare_features_and_target(
         df, target_col_final
     )
     print(f"[Model Agent] Inferred problem type: {problem_type}")
 
     # 5) Train model
-    print("[Model Agent] Training model ...")
-    model, y_test, y_pred = train_model(X, y, problem_type)
+    print(f"[Model Agent] Training model with algo = {algo} ...")
+    model, y_test, y_pred = train_model(X, y, problem_type, algo=algo)
 
     # 6) Evaluate model
     print("[Model Agent] Evaluating model ...")
@@ -122,26 +113,28 @@ def run_model_agent(file_path: str, target_col: str | None = None) -> None:
         pairs = sorted(
             zip(feature_names, importances),
             key=lambda x: x[1],
-            reverse=True
+            reverse=True,
         )
         top_pairs = pairs[:10]
         top_feature_importances = {
             name: round(score, 3) for name, score in top_pairs
         }
 
-    # Build a unified model_report dict
+    # Build unified model_report
     model_report = {
         "problem_type": metrics.get("type", problem_type),
         "target_column": target_col_final,
         "target_missing_percent": round(target_missing_pct, 2),
         "metrics": metrics,
         "top_feature_importances": top_feature_importances,
+        "algorithm": algo,
     }
 
-    # 7) Build prompt and ask LLM for combined explanation
+    # 7) Build prompt and ask LLM
     prompt = build_model_prompt(
         file_path=file_path,
-        target_col=target_col_final,
+        target_column=target_col_final,
+        problem_type=problem_type,
         eda_summary=eda_summary,
         model_report=model_report,
     )
@@ -163,12 +156,13 @@ def run_model_agent(file_path: str, target_col: str | None = None) -> None:
 
 if __name__ == "__main__":
     # Usage:
-    #   python model_agent.py <path_to_csv> [target_column]
+    #   python model_agent.py <path_to_csv> [target_column] [algo]
     if len(sys.argv) < 2:
-        print("Usage: python model_agent.py <path_to_csv> [target_column]")
+        print("Usage: python model_agent.py <path_to_csv> [target_column] [algo]")
         sys.exit(1)
 
     csv_path = sys.argv[1]
     target = sys.argv[2] if len(sys.argv) >= 3 else None
+    algo = sys.argv[3] if len(sys.argv) >= 4 else "random_forest"
 
-    run_model_agent(csv_path, target_col=target)
+    run_model_agent(csv_path, target_col=target, algo=algo)

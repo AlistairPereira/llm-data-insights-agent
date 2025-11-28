@@ -1,22 +1,28 @@
-Here are the answers:
+**Summary**
 
-• **Dataset and Target Summary**: The dataset contains information about 205 cars, including their features such as engine size, horsepower, fuel type, make, and price. The chosen target column for prediction is "price", which indicates that this is a regression problem where we want to predict the price of a car based on its features.
+* The dataset has 205 rows and 15 columns, with the majority being numeric columns and a few categorical columns.
+* The target column "price" represents the price of cars, making this a regression problem since we're trying to predict a continuous value.
 
-• **Problem Type**: This is a regression problem because the target variable (price) is continuous and there is no clear categorization or classification into distinct classes. The goal is to predict a numerical value (price).
+**Model Performance**
 
-• **Model Performance Metrics Interpretation**:
-	+ RMSE (Root Mean Squared Error): Measures the average distance between predicted and actual prices. A lower value indicates better performance.
-	+ R2: Measures the proportion of variance in the target variable that is explained by the model. A higher value indicates better performance.
-	+ These metrics suggest that the model is performing reasonably well, with an RMSE around 3191 and an R2 of 0.873.
+* For regression, the model's performance is moderate. The RMSE (Root Mean Squared Error) is 3191.979, indicating that the model is not very accurate in predicting the price of cars. However, the R² score is 0.8729, which suggests that the model explains around 87% of the variance in the target variable.
+* For a regression problem, these metrics seem moderate to poor.
 
-• **Target Missing Percentage**: The target missing percentage (0%) implies that there are no missing values in the "price" column, which means all observations have a valid price value.
+**Interpretation with EDA**
 
-• **Feature Importances Interpretation**:
-	+ The top feature importances suggest that engine size is the most important factor, followed by highway MPG. This makes sense because engine size and fuel efficiency can significantly impact a car's price.
-	+ Other features like horsepower, width, city MPG, make, drive wheels, body style, and normalized losses are less important.
+* The most strongly correlated features with the target "price" are engine-size and highway-mpg, with correlation coefficients of -0.853 and 0.971, respectively.
+* Feature importances from the model show that engine-size is the most important feature, followed by highway-mpg. However, these importance scores don't match the correlation coefficients, suggesting that the model might be using different weights for these features or that other features are more relevant than expected.
+* There are outliers in the target "price" column with values above 45400 and below 5118. These outliers might affect the RMSE and R² metrics, which could be skewed by extreme values.
 
-• **Next Steps to Improve the Model or Analysis**:
-	1. **Handle Missing Values**: Even though there are no missing values in the "price" column, it's essential to check other columns for missing values and consider imputation techniques (e.g., mean/median imputation) if necessary.
-	2. **Feature Engineering**: Explore additional features that might be relevant for predicting car prices, such as mileage, transmission type, or fuel economy.
-	3. **Hyperparameter Tuning**: Perform hyperparameter tuning to optimize the model's performance. This could involve adjusting parameters like learning rate, batch size, or number of hidden layers in a neural network.
+**Practical Insights**
+
+* The model suggests that cars with larger engine sizes and better highway fuel efficiency tend to have higher prices.
+* Cars from Toyota and Mazda brands are more popular than others, but this doesn't necessarily imply a correlation between brand and price (more analysis needed).
+* There's a noticeable gap in the "price" distribution, which could be due to missing values or outliers.
+
+**Next Steps**
+
+* Feature engineering: Consider creating new features that can help capture the relationship between engine size and highway fuel efficiency. For example, you could create an interaction term between these two features.
+* Handling outliers: Investigate why there are such large price deviations and consider imputing or transforming these values to reduce their impact on the model.
+* Model improvements: Experiment with different algorithms (e.g., random forest, gradient boosting) that might handle non-linear relationships better than logistic regression. Also, try hyperparameter tuning to optimize the model's performance.
 

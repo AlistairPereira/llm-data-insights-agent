@@ -58,7 +58,7 @@ def run_eda_agent(file_path: str, use_llm: bool = True) -> dict:
     df_raw = load_dataset(file_path)
     print(f"[EDA Agent] Loaded dataset with shape: {df_raw.shape}")
 
-    print("🧹 [EDA Agent] Cleaning dataset ...")
+    print("[EDA Agent] Cleaning dataset ...")
     df_clean = basic_cleaning(df_raw)
 
     print("[EDA Agent] Generating EDA summary ...")
