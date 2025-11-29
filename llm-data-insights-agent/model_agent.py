@@ -1,5 +1,4 @@
 
-
 # model_agent.py
 
 import sys
@@ -24,9 +23,6 @@ def build_model_prompt(
     eda_summary: dict,
     model_report: dict,
 ) -> str:
-    """
-    Prompt for supervised model explanation.
-    """
     return f"""
 You are a senior data scientist.
 
@@ -60,9 +56,7 @@ Using ONLY this information:
    - 3–5 concrete interpretations of what the model is telling us about the data.
 
 5. Suggest next steps:
-   - Feature engineering ideas.
-   - Handling outliers or skewed features.
-   - Model improvements (hyperparameter tuning, more data, different algorithms).
+   - Feature engineering, outlier handling, model improvements.
 
 Answer in clear bullet points and short paragraphs so a non-expert data stakeholder can understand.
     """
@@ -70,16 +64,15 @@ Answer in clear bullet points and short paragraphs so a non-expert data stakehol
 
 def run_model_agent(file_path: str, target_col: str | None = None, algo: str = "random_forest") -> None:
     """
-    Full pipeline for Agent 2.
+    Full pipeline for Agent 2 (Model Agent).
     """
-
     print(f"[Model Agent] Starting modeling pipeline for: {file_path}")
 
-    # 1) Get EDA summary from Agent 1 (without calling LLM again)
+    # 1) Get EDA summary from Agent 1 (without LLM)
     print("[Model Agent] Calling EDA agent (no LLM) to get EDA summary ...")
     eda_summary = run_eda_agent(file_path, use_llm=False)
 
-    # 2) Load the dataset again for modeling
+    # 2) Load dataset
     print("[Model Agent] Loading dataset for modeling ...")
     df = load_dataset(file_path)
     print(f"[Model Agent] Data shape: {df.shape}")
@@ -88,7 +81,7 @@ def run_model_agent(file_path: str, target_col: str | None = None, algo: str = "
     target_col_final = choose_target_column(df, target_col)
     print(f"[Model Agent] Using target column: {target_col_final}")
 
-    # 4) Prepare features and target
+    # 4) Prepare features + target
     print("[Model Agent] Preparing features and target ...")
     X, y, problem_type, cat_encoder, y_encoder, feature_names = prepare_features_and_target(
         df, target_col_final
@@ -103,10 +96,10 @@ def run_model_agent(file_path: str, target_col: str | None = None, algo: str = "
     print("[Model Agent] Evaluating model ...")
     metrics = evaluate_model(y_test, y_pred, problem_type)
 
-    # 6a) Compute real target missing percentage
+    # 6a) target missing %
     target_missing_pct = float(df[target_col_final].isna().mean() * 100.0)
 
-    # 6b) Compute feature importances (top 10) if model supports it
+    # 6b) feature importances (top 10)
     top_feature_importances: dict[str, float] = {}
     if hasattr(model, "feature_importances_"):
         importances = model.feature_importances_
@@ -120,7 +113,7 @@ def run_model_agent(file_path: str, target_col: str | None = None, algo: str = "
             name: round(score, 3) for name, score in top_pairs
         }
 
-    # Build unified model_report
+    # unified model report (IMPORTANT: algorithm)
     model_report = {
         "problem_type": metrics.get("type", problem_type),
         "target_column": target_col_final,
@@ -130,7 +123,14 @@ def run_model_agent(file_path: str, target_col: str | None = None, algo: str = "
         "algorithm": algo,
     }
 
-    # 7) Build prompt and ask LLM
+    #  save for hyperparam_agent
+    os.makedirs("outputs", exist_ok=True)
+    model_report_path = "outputs/model_report.json"
+    with open(model_report_path, "w", encoding="utf-8") as f:
+        json.dump(model_report, f, indent=2)
+    print(f"[Model Agent] Model report saved to {model_report_path}")
+
+    # 7) Ask LLM for explanation
     prompt = build_model_prompt(
         file_path=file_path,
         target_column=target_col_final,
@@ -146,8 +146,6 @@ def run_model_agent(file_path: str, target_col: str | None = None, algo: str = "
     print(insights)
     print("=========================================================\n")
 
-    # Save to file
-    os.makedirs("outputs", exist_ok=True)
     with open("outputs/model_insights.txt", "w", encoding="utf-8") as f:
         f.write(insights)
 
@@ -166,3 +164,4 @@ if __name__ == "__main__":
     algo = sys.argv[3] if len(sys.argv) >= 4 else "random_forest"
 
     run_model_agent(csv_path, target_col=target, algo=algo)
+
