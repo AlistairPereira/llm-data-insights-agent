@@ -1,28 +1,36 @@
 **Summary**
 
-* The dataset has 205 rows and 15 columns, with the majority being numeric columns and a few categorical columns.
-* The target column "price" represents the price of cars, making this a regression problem since we're trying to predict a continuous value.
+* The dataset has 150 rows and 6 columns: Id (int), SepalLengthCm (float), SepalWidthCm (float), PetalLengthCm (float), PetalWidthCm (float), and Species (object).
+* The target column, Species, represents the species of iris flowers and is a classification problem because it has distinct classes (Iris-setosa, Iris-versicolor, Iris-virginica).
 
 **Model Performance**
 
-* For regression, the model's performance is moderate. The RMSE (Root Mean Squared Error) is 3191.979, indicating that the model is not very accurate in predicting the price of cars. However, the R² score is 0.8729, which suggests that the model explains around 87% of the variance in the target variable.
-* For a regression problem, these metrics seem moderate to poor.
+* For regression: Not applicable. For classification:
+	+ Accuracy: 1.0
+	+ F1-weighted: 1.0
+These metrics indicate perfect performance on the classification task.
 
-**Interpretation with EDA**
+The performance seems excellent, as all metrics are at their maximum possible values (1.0). This suggests that the model is very effective in predicting the species of iris flowers based on the given features.
 
-* The most strongly correlated features with the target "price" are engine-size and highway-mpg, with correlation coefficients of -0.853 and 0.971, respectively.
-* Feature importances from the model show that engine-size is the most important feature, followed by highway-mpg. However, these importance scores don't match the correlation coefficients, suggesting that the model might be using different weights for these features or that other features are more relevant than expected.
-* There are outliers in the target "price" column with values above 45400 and below 5118. These outliers might affect the RMSE and R² metrics, which could be skewed by extreme values.
+**Interpretation using EDA**
+
+* Features strongly correlated with the target:
+	+ SepalLengthCm and PetalLengthCm are most strongly correlated with Species, as they indicate the length of the sepals and petals, which might be relevant for classification.
+* Feature importances from the model:
+	+ The top feature importance is on SepalWidthCm, but it's close to 0. This suggests that SepalWidthCm has some relevance, but its importance might be underemphasized by the model due to multicollinearity with other features (e.g., SepalLengthCm).
+* Outliers in the target or key features:
+	+ There are no outliers in Species or Id.
+	+ However, there is an outlier in SepalWidthCm, which affects its importance. This could potentially lead to biased results if not handled properly.
 
 **Practical Insights**
 
-* The model suggests that cars with larger engine sizes and better highway fuel efficiency tend to have higher prices.
-* Cars from Toyota and Mazda brands are more popular than others, but this doesn't necessarily imply a correlation between brand and price (more analysis needed).
-* There's a noticeable gap in the "price" distribution, which could be due to missing values or outliers.
+* The model suggests that Iris-setosa has the most balanced and varied characteristics among the three species, as it is well-represented in terms of both sepal and petal dimensions.
+* SepalWidthCm seems less important than other features, possibly because its value range is more limited. This might lead to a biased model if not properly handled.
+* PetalLengthCm has the most significant correlation with Species, indicating that this feature is crucial for distinguishing between species.
 
 **Next Steps**
 
-* Feature engineering: Consider creating new features that can help capture the relationship between engine size and highway fuel efficiency. For example, you could create an interaction term between these two features.
-* Handling outliers: Investigate why there are such large price deviations and consider imputing or transforming these values to reduce their impact on the model.
-* Model improvements: Experiment with different algorithms (e.g., random forest, gradient boosting) that might handle non-linear relationships better than logistic regression. Also, try hyperparameter tuning to optimize the model's performance.
+* Feature engineering: Consider transforming or encoding categorical variables (e.g., SepalWidthCm) to improve the model's performance and handle potential multicollinearity issues.
+* Outlier handling: Investigate how to handle outliers in SepalWidthCm, as they might affect metrics. This could involve data normalization or feature scaling techniques.
+* Model improvements: Consider using ensemble methods or additional classification algorithms to further improve the model's accuracy and robustness.
 

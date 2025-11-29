@@ -1,0 +1,29 @@
+{
+  "problem_type": "classification",
+  "experiments": [
+    {
+      "algo_key": "gboost",
+      "algo_name": "GradientBoostingClassifier",
+      "metric_name": "accuracy",
+      "metric_value": 0.8866666666666666,
+      "higher_is_better": true,
+      "best_params": {
+        "n_estimators": 300,
+        "max_depth": 4,
+        "learning_rate": 0.01
+      }
+    }
+  ],
+  "best_experiment": {
+    "algo_key": "gboost",
+    "algo_name": "GradientBoostingClassifier",
+    "metric_name": "accuracy",
+    "metric_value": 0.8866666666666666,
+    "higher_is_better": true,
+    "best_params": {
+      "n_estimators": 300,
+      "max_depth": 4,
+      "learning_rate": 0.01
+    }
+  }
+}

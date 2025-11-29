@@ -1,0 +1,29 @@
+**Summary**
+
+* We tried only one algorithm: Gradient Boosting Classifier.
+* The best performing algorithm had a metric value of 0.8866666666666666, which means an accuracy of approximately 88.7%.
+
+**Explanation of metrics**
+
+* In classification problems like this one, the reported metric is accuracy, not RMSE (mean squared error). Accuracy measures the proportion of correctly classified instances.
+* An accuracy of 88.7% means that the model correctly predicted the species of about 88.7% of the samples in the dataset.
+
+**Hyperparameter interpretation for tree-based models**
+
+* **n_estimators**: Increasing n_estimators improves performance by adding more trees to the ensemble, but may also lead to overfitting if it gets too high. A higher value is better.
+* **max_depth**: Reducing max_depth prevents deep trees from memorizing the training data and reduces overfitting. A lower value is better.
+* **learning_rate**: A smaller learning rate allows for more iterations of gradient descent, improving performance but also increasing the risk of overfitting.
+
+**Hyperparameter interpretation for linear models**
+
+* **regularization (alpha or C)**: Regularization adds a penalty term to the loss function to prevent large weights. Alpha is used in L1 regularization and reduces feature importance, while C is used in L2 regularization and reduces model complexity. A smaller alpha or C value means less regularization, which can improve performance but also increases overfitting.
+
+**Recommendation**
+
+* Deploying the model with 300 n_estimators, max_depth = 4, learning_rate = 0.01, and no regularization (alpha = 0) for Gradient Boosting Classifier.
+* For future experiments:
+ + Try increasing the number of trees to see if it improves performance without overfitting.
+ + Experiment with different learning rates to find an optimal value that balances improvement in accuracy with reduction in overfitting.
+ + Collect more data to increase the size and diversity of the dataset, which can help improve model performance on unseen samples.
+ + Apply feature engineering techniques to extract more relevant features from the existing features, such as dimensionality reduction or transformation.
+

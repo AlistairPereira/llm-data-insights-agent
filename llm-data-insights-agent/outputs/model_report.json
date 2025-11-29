@@ -1,0 +1,18 @@
+{
+  "problem_type": "classification",
+  "target_column": "Species",
+  "target_missing_percent": 0.0,
+  "metrics": {
+    "type": "classification",
+    "accuracy": 1.0,
+    "f1_weighted": 1.0
+  },
+  "top_feature_importances": {
+    "Id": 0.658,
+    "PetalLengthCm": 0.218,
+    "PetalWidthCm": 0.123,
+    "SepalLengthCm": 0.0,
+    "SepalWidthCm": 0.0
+  },
+  "algorithm": "gbr"
+}
