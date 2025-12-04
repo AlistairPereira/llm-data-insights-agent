@@ -1,0 +1,27 @@
+{
+  "problem_type": "classification",
+  "experiments": [
+    {
+      "algo_key": "logreg",
+      "algo_name": "LogisticRegression",
+      "metric_name": "accuracy",
+      "metric_value": 0.9933333333333333,
+      "higher_is_better": true,
+      "best_params": {
+        "penalty": "l2",
+        "C": 10
+      }
+    }
+  ],
+  "best_experiment": {
+    "algo_key": "logreg",
+    "algo_name": "LogisticRegression",
+    "metric_name": "accuracy",
+    "metric_value": 0.9933333333333333,
+    "higher_is_better": true,
+    "best_params": {
+      "penalty": "l2",
+      "C": 10
+    }
+  }
+}

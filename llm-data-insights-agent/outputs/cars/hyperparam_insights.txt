@@ -1,0 +1,30 @@
+**Summary:**
+
+* Four machine learning algorithms were tried: Random Forest Regressor, Gradient Boosting Regressor, Ridge, and Lasso.
+* The best performing algorithm is the Random Forest Regressor with an RMSE (Root Mean Squared Error) value of 3855.3384.
+
+**Explanation of the metric:**
+
+* RMSE is a measure of the difference between predicted and actual values in regression problems. It's calculated as the square root of the average squared difference.
+* In this case, an RMSE of 3855.3384 means that, on average, the model's predictions were off by about 3855.
+
+**Interpretation of hyperparameters:**
+
+* **Tree-based models (Random Forest / Gradient Boosting):**
+	+ `n_estimators`: The more trees you have in your forest, the better the model can capture complex relationships in the data. However, too many trees can lead to overfitting.
+	+ `max_depth`: Limiting the maximum depth of each tree helps prevent overfitting by preventing trees from splitting into too many sub-branches.
+* **Linear models (Ridge, Lasso):**
+	+ Regularization (alpha or C) helps prevent overfitting by adding a penalty term to the loss function. A higher regularization value means less feature importance and more generalization.
+
+**Recommendation:**
+
+* I would deploy the Random Forest Regressor with the best hyperparameters: `n_estimators=300`, `min_samples_split=2`, `min_samples_leaf=1`, and `max_depth=20`.
+* This configuration balances model complexity and regularization, making it a good trade-off between accuracy and overfitting.
+
+**Future experiment ideas:**
+
+* **Try more trees**: Increasing the number of trees in the Random Forest Regressor can lead to better performance but may also increase computational cost.
+* **Different learning rates**: Experimenting with different learning rates for Gradient Boosting Regressor can help find the optimal rate for this algorithm.
+* **More data**: Gathering additional data points could improve model performance, especially if it contains more relevant features or variations in the target variable.
+* **Feature engineering**: Exploring new feature combinations or transformations could lead to better model performance and interpretation of the results.
+

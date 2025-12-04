@@ -1,36 +1,45 @@
-**Summary**
+**Summary:**
 
-* The dataset has 150 rows and 6 columns: Id (int), SepalLengthCm (float), SepalWidthCm (float), PetalLengthCm (float), PetalWidthCm (float), and Species (object).
-* The target column, Species, represents the species of iris flowers and is a classification problem because it has distinct classes (Iris-setosa, Iris-versicolor, Iris-virginica).
+* The dataset has 205 rows and 15 columns, with key data types being integer64 (symboling) and float64 (width, height, engine-size, city-mpg, highway-mpg).
+* The target column "price" represents the price of a car, making this a regression problem since we're predicting a continuous value.
 
-**Model Performance**
+**Model Performance:**
 
-* For regression: Not applicable. For classification:
-	+ Accuracy: 1.0
-	+ F1-weighted: 1.0
-These metrics indicate perfect performance on the classification task.
+* For regression, the model's performance is:
+	+ RMSE (Root Mean Squared Error): 4498.699685255597
+	+ R² (R-squared): 0.7476145642798953
+* These metrics indicate that the model is not performing exceptionally well, as the RMSE is relatively high and R² is moderate.
 
-The performance seems excellent, as all metrics are at their maximum possible values (1.0). This suggests that the model is very effective in predicting the species of iris flowers based on the given features.
+**Interpretation of Model Features:**
 
-**Interpretation using EDA**
+* The top three features most strongly correlated with the target "price" are:
+	+ Engine size (correlation: -0.853)
+	+ Highway MPG (correlation: 0.971)
+	+ Width (correlation: 0.718)
+* Feature importances from the model show that engine size and highway MPG have high importance values, which aligns with the strong correlations found in EDA.
+* However, there are no feature importances for city MPG, which is one of the strongest correlated features.
 
-* Features strongly correlated with the target:
-	+ SepalLengthCm and PetalLengthCm are most strongly correlated with Species, as they indicate the length of the sepals and petals, which might be relevant for classification.
-* Feature importances from the model:
-	+ The top feature importance is on SepalWidthCm, but it's close to 0. This suggests that SepalWidthCm has some relevance, but its importance might be underemphasized by the model due to multicollinearity with other features (e.g., SepalLengthCm).
-* Outliers in the target or key features:
-	+ There are no outliers in Species or Id.
-	+ However, there is an outlier in SepalWidthCm, which affects its importance. This could potentially lead to biased results if not handled properly.
+**Outliers and Their Impact:**
 
-**Practical Insights**
+* There are outliers in the target "price" column, particularly at the lower end (e.g., $5118.0).
+* Outlier handling may be necessary to improve model performance.
+* The high value of 45400.0 in the price column also suggests potential outliers.
 
-* The model suggests that Iris-setosa has the most balanced and varied characteristics among the three species, as it is well-represented in terms of both sepal and petal dimensions.
-* SepalWidthCm seems less important than other features, possibly because its value range is more limited. This might lead to a biased model if not properly handled.
-* PetalLengthCm has the most significant correlation with Species, indicating that this feature is crucial for distinguishing between species.
+**Practical Insights:**
 
-**Next Steps**
+* The model is suggesting that larger engine sizes and better fuel efficiency are associated with higher prices, which aligns with general expectations.
+* Highway MPG appears to have a strong correlation with price, indicating that cars with better highway performance may be more expensive.
+* Width seems to have a moderate correlation with price, possibly due to the fact that wider cars often require more materials and therefore cost more.
 
-* Feature engineering: Consider transforming or encoding categorical variables (e.g., SepalWidthCm) to improve the model's performance and handle potential multicollinearity issues.
-* Outlier handling: Investigate how to handle outliers in SepalWidthCm, as they might affect metrics. This could involve data normalization or feature scaling techniques.
-* Model improvements: Consider using ensemble methods or additional classification algorithms to further improve the model's accuracy and robustness.
+**Next Steps:**
+
+* Feature engineering:
+	+ Consider creating new features from existing ones (e.g., transforming engine size or width into more informative variables).
+	+ Incorporating additional data sources (e.g., fuel efficiency metrics) may provide further insights.
+* Outlier handling:
+	+ Investigate the causes of outliers in the target and feature columns to determine if they require special attention.
+	+ Consider using techniques like winsorization or quantile regression to handle outliers.
+* Model improvements:
+	+ Experiment with different algorithms (e.g., decision trees, random forests) to see if they can improve performance.
+	+ Consider incorporating additional features or models (e.g., clustering, dimensionality reduction) to capture more complex relationships in the data.
 

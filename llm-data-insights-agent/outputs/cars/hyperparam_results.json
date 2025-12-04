@@ -1,0 +1,63 @@
+{
+  "problem_type": "regression",
+  "experiments": [
+    {
+      "algo_key": "rf",
+      "algo_name": "RandomForestRegressor",
+      "metric_name": "rmse",
+      "metric_value": 3855.338426589406,
+      "higher_is_better": false,
+      "best_params": {
+        "n_estimators": 300,
+        "min_samples_split": 2,
+        "min_samples_leaf": 1,
+        "max_depth": 20
+      }
+    },
+    {
+      "algo_key": "gbr",
+      "algo_name": "GradientBoostingRegressor",
+      "metric_name": "rmse",
+      "metric_value": 3918.9805444657486,
+      "higher_is_better": false,
+      "best_params": {
+        "n_estimators": 300,
+        "max_depth": 2,
+        "learning_rate": 0.01
+      }
+    },
+    {
+      "algo_key": "ridge",
+      "algo_name": "Ridge",
+      "metric_name": "rmse",
+      "metric_value": 4039.0001778008846,
+      "higher_is_better": false,
+      "best_params": {
+        "alpha": 7.742636826811277
+      }
+    },
+    {
+      "algo_key": "lasso",
+      "algo_name": "Lasso",
+      "metric_name": "rmse",
+      "metric_value": 4293.807098358088,
+      "higher_is_better": false,
+      "best_params": {
+        "alpha": 10.0
+      }
+    }
+  ],
+  "best_experiment": {
+    "algo_key": "rf",
+    "algo_name": "RandomForestRegressor",
+    "metric_name": "rmse",
+    "metric_value": 3855.338426589406,
+    "higher_is_better": false,
+    "best_params": {
+      "n_estimators": 300,
+      "min_samples_split": 2,
+      "min_samples_leaf": 1,
+      "max_depth": 20
+    }
+  }
+}

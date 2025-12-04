@@ -1,0 +1,284 @@
+# report_agent.py
+
+import os
+import sys
+import json
+
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Image,
+    PageBreak,
+)
+from reportlab.lib.units import inch
+
+
+# ---------- Helper loaders ----------
+
+def load_text(path: str) -> str | None:
+    """Return file text if it exists, else None."""
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read().strip()
+    except Exception as e:
+        print(f"[Report Agent] Failed to load text {path}: {e}")
+        return None
+
+
+def load_json(path: str):
+    """Return dict if JSON exists and is valid, else None."""
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"[Report Agent] Failed to load json {path}: {e}")
+        return None
+
+
+def dataset_key_from_arg(arg: str | None) -> str:
+    """
+    Convert user arg to a dataset key.
+
+    Examples:
+      - "cars"                      -> "cars"
+      - "sample_data/cars.csv"      -> "cars"
+      - "Sample Data / My Cars.csv" -> "sample_data___my_cars"
+    """
+    if not arg:
+        return "default"
+
+    # If it's a path, use basename without extension
+    if os.sep in arg or arg.endswith(".csv"):
+        base = os.path.basename(arg)
+        name, _ = os.path.splitext(base)
+        key = name
+    else:
+        key = arg
+
+    return key.replace(" ", "_").lower()
+
+
+# ---------- PDF builder helpers ----------
+
+def add_heading(story, text, level=1):
+    styles = getSampleStyleSheet()
+    if level == 1:
+        style = styles["Heading1"]
+    elif level == 2:
+        style = styles["Heading2"]
+    else:
+        style = styles["Heading3"]
+    story.append(Paragraph(text, style))
+    story.append(Spacer(1, 0.15 * inch))
+
+
+def add_paragraph(story, text: str):
+    styles = getSampleStyleSheet()
+    story.append(Paragraph(text.replace("\n", "<br/>"), styles["BodyText"]))
+    story.append(Spacer(1, 0.1 * inch))
+
+
+def add_image_if_exists(story, path: str, caption: str | None = None):
+    """Safely add an image if it exists. No preserveAspectRatio kwarg here."""
+    if not os.path.exists(path):
+        return
+    try:
+        img = Image(path)
+        # Let reportlab compute aspect ratio but restrict size
+        img._restrictSize(5 * inch, 4 * inch)
+        story.append(img)
+        if caption:
+            styles = getSampleStyleSheet()
+            story.append(Paragraph(caption, styles["Italic"]))
+        story.append(Spacer(1, 0.2 * inch))
+    except Exception as e:
+        print(f"[Report Agent] Failed to load image {path}: {e}")
+
+
+# ---------- Main report agent ----------
+
+def run_report_agent(dataset_arg: str | None = None):
+    print("[Report Agent] Generating final PDF report...")
+
+    dataset_key = dataset_key_from_arg(dataset_arg)
+    base_out_dir = os.path.join("outputs", dataset_key)
+    print(f"[Report Agent] Using dataset key '{dataset_key}', output folder: {base_out_dir}")
+
+    # Make sure folder exists (in case some agents haven’t run yet)
+    os.makedirs(base_out_dir, exist_ok=True)
+
+    # File locations (per dataset)
+    eda_summary_path = os.path.join(base_out_dir, "eda_summary.json")
+    eda_insights_path = os.path.join(base_out_dir, "eda_insights.txt")
+
+    model_report_path = os.path.join(base_out_dir, "model_report.json")
+    model_insights_path = os.path.join(base_out_dir, "model_insights.txt")
+
+    hyperparam_results_path = os.path.join(base_out_dir, "hyperparam_results.json")
+    hyperparam_insights_path = os.path.join(base_out_dir, "hyperparam_insights.txt")
+
+    unsupervised_insights_path = os.path.join(base_out_dir, "unsupervised_insights.txt")
+
+    hist_path = os.path.join(base_out_dir, "histograms.png")
+    corr_path = os.path.join(base_out_dir, "corr_heatmap.png")
+
+    # Load data (gracefully if missing)
+    eda_summary = load_json(eda_summary_path)
+    eda_insights = load_text(eda_insights_path)
+
+    model_report = load_json(model_report_path)
+    model_insights = load_text(model_insights_path)
+
+    hyperparam_results = load_json(hyperparam_results_path)
+    hyperparam_insights = load_text(hyperparam_insights_path)
+
+    unsupervised_insights = load_text(unsupervised_insights_path)
+
+    # Build PDF
+    output_pdf = os.path.join("outputs", f"report_{dataset_key}.pdf")
+    doc = SimpleDocTemplate(output_pdf, pagesize=A4)
+    styles = getSampleStyleSheet()
+    story = []
+
+    # -------- Title page --------
+    title = f"LLM Data Insights AutoML Report – {dataset_key}"
+    story.append(Paragraph(title, styles["Title"]))
+    story.append(Spacer(1, 0.3 * inch))
+
+    story.append(Paragraph("Generated by your multi-agent LLM system.", styles["BodyText"]))
+    story.append(Spacer(1, 0.2 * inch))
+    story.append(PageBreak())
+
+    # -------- Section 1: EDA --------
+    add_heading(story, "1. Exploratory Data Analysis (EDA)", level=1)
+
+    if eda_summary:
+        shape = eda_summary.get("shape")
+        dtypes = eda_summary.get("dtypes", {})
+        add_paragraph(
+            story,
+            f"EDA summary is available. Dataset shape: {shape}. "
+            f"Number of columns: {len(dtypes)}.",
+        )
+    else:
+        add_paragraph(
+            story,
+            f"No EDA summary JSON found for this dataset ({eda_summary_path}). "
+            "Run eda_agent first to populate it."
+        )
+
+    add_image_if_exists(story, hist_path, "Figure 1: Numeric feature histograms")
+    add_image_if_exists(story, corr_path, "Figure 2: Correlation heatmap")
+
+    if eda_insights:
+        add_heading(story, "LLM Insights (EDA)", level=2)
+        add_paragraph(story, eda_insights)
+    else:
+        add_paragraph(
+            story,
+            "No EDA LLM insights found. Run eda_agent with use_llm=True to generate them."
+        )
+
+    story.append(PageBreak())
+
+    # -------- Section 2: Supervised Modeling --------
+    add_heading(story, "2. Supervised Modeling", level=1)
+
+    if model_report:
+        pt = model_report.get("problem_type", "unknown")
+        tgt = model_report.get("target_column", "unknown")
+        metrics = model_report.get("metrics", {})
+        algo = model_report.get("algorithm", "unknown")
+
+        add_paragraph(
+            story,
+            f"Problem type: {pt}. Target column: {tgt}. "
+            f"Algorithm used: {algo}. Metrics: {metrics}."
+        )
+    else:
+        add_paragraph(
+            story,
+            f"No model_report.json found for this dataset ({model_report_path}). "
+            "Run model_agent first."
+        )
+
+    if model_insights:
+        add_heading(story, "LLM Insights (Model)", level=2)
+        add_paragraph(story, model_insights)
+    else:
+        add_paragraph(
+            story,
+            "No LLM model insights found. Run model_agent to generate them."
+        )
+
+    story.append(PageBreak())
+
+    # -------- Section 3: Hyperparameter Search --------
+    add_heading(story, "3. Hyperparameter Tuning", level=1)
+
+    if hyperparam_results:
+        best = hyperparam_results.get("best_experiment")
+        if best:
+            add_paragraph(
+                story,
+                f"Best algorithm: {best.get('algo_name')} "
+                f"with {best.get('metric_name')}={best.get('metric_value')}. "
+                f"Best params: {best.get('best_params')}."
+            )
+        else:
+            add_paragraph(
+                story,
+                "Hyperparameter results JSON found but no 'best_experiment' present."
+            )
+    else:
+        add_paragraph(
+            story,
+            f"No hyperparam_results.json found for this dataset ({hyperparam_results_path}). "
+            "Run hyperparam_agent first."
+        )
+
+    if hyperparam_insights:
+        add_heading(story, "LLM Insights (Hyperparameters)", level=2)
+        add_paragraph(story, hyperparam_insights)
+    else:
+        add_paragraph(
+            story,
+            "No hyperparameter LLM insights found. Run hyperparam_agent with LLM enabled."
+        )
+
+    story.append(PageBreak())
+
+    # -------- Section 4: Unsupervised Analysis --------
+    add_heading(story, "4. Unsupervised Analysis", level=1)
+
+    if unsupervised_insights:
+        add_heading(story, "LLM Insights (Unsupervised)", level=2)
+        add_paragraph(story, unsupervised_insights)
+    else:
+        add_paragraph(
+            story,
+            f"No unsupervised insights found for this dataset ({unsupervised_insights_path}). "
+            "Run unsupervised_model_agent first if you want this section."
+        )
+
+    # -------- Build PDF --------
+    doc.build(story)
+    print(f"[Report Agent] ✅ PDF report created at {output_pdf}")
+
+
+if __name__ == "__main__":
+    # Usage:
+    #   python report_agent.py cars
+    #   python report_agent.py iris
+    #
+    # Or even:
+    #   python report_agent.py sample_data/cars.csv
+    arg = sys.argv[1] if len(sys.argv) >= 2 else None
+    run_report_agent(arg)

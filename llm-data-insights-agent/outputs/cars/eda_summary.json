@@ -1,0 +1,276 @@
+{
+  "shape": [
+    205,
+    15
+  ],
+  "dtypes": {
+    "symboling": "int64",
+    "normalized-losses": "object",
+    "make": "object",
+    "fuel-type": "object",
+    "body-style": "object",
+    "drive-wheels": "object",
+    "engine-location": "object",
+    "width": "float64",
+    "height": "float64",
+    "engine-type": "object",
+    "engine-size": "int64",
+    "horsepower": "object",
+    "city-mpg": "int64",
+    "highway-mpg": "int64",
+    "price": "int64"
+  },
+  "missing_perc": {
+    "symboling": 0.0,
+    "normalized-losses": 0.0,
+    "make": 0.0,
+    "fuel-type": 0.0,
+    "body-style": 0.0,
+    "drive-wheels": 0.0,
+    "engine-location": 0.0,
+    "width": 0.0,
+    "height": 0.0,
+    "engine-type": 0.0,
+    "engine-size": 0.0,
+    "horsepower": 0.0,
+    "city-mpg": 0.0,
+    "highway-mpg": 0.0,
+    "price": 0.0
+  },
+  "describe_num": {
+    "symboling": {
+      "count": 205.0,
+      "mean": 0.834,
+      "std": 1.245,
+      "min": -2.0,
+      "25%": 0.0,
+      "50%": 1.0,
+      "75%": 2.0,
+      "max": 3.0
+    },
+    "width": {
+      "count": 205.0,
+      "mean": 65.908,
+      "std": 2.145,
+      "min": 60.3,
+      "25%": 64.1,
+      "50%": 65.5,
+      "75%": 66.9,
+      "max": 72.3
+    },
+    "height": {
+      "count": 205.0,
+      "mean": 53.725,
+      "std": 2.444,
+      "min": 47.8,
+      "25%": 52.0,
+      "50%": 54.1,
+      "75%": 55.5,
+      "max": 59.8
+    },
+    "engine-size": {
+      "count": 205.0,
+      "mean": 126.907,
+      "std": 41.643,
+      "min": 61.0,
+      "25%": 97.0,
+      "50%": 120.0,
+      "75%": 141.0,
+      "max": 326.0
+    },
+    "city-mpg": {
+      "count": 205.0,
+      "mean": 25.22,
+      "std": 6.542,
+      "min": 13.0,
+      "25%": 19.0,
+      "50%": 24.0,
+      "75%": 30.0,
+      "max": 49.0
+    },
+    "highway-mpg": {
+      "count": 205.0,
+      "mean": 30.751,
+      "std": 6.886,
+      "min": 16.0,
+      "25%": 25.0,
+      "50%": 30.0,
+      "75%": 34.0,
+      "max": 54.0
+    },
+    "price": {
+      "count": 205.0,
+      "mean": 13227.478,
+      "std": 7902.652,
+      "min": 5118.0,
+      "25%": 7788.0,
+      "50%": 10345.0,
+      "75%": 16500.0,
+      "max": 45400.0
+    }
+  },
+  "top_categories": {
+    "normalized-losses": {
+      "?": 41,
+      "161": 11,
+      "91": 8,
+      "150": 7,
+      "128": 6
+    },
+    "make": {
+      "toyota": 32,
+      "nissan": 18,
+      "mazda": 17,
+      "mitsubishi": 13,
+      "honda": 13
+    },
+    "fuel-type": {
+      "gas": 185,
+      "diesel": 20
+    }
+  },
+  "correlations": {
+    "numeric_columns": [
+      "symboling",
+      "width",
+      "height",
+      "engine-size",
+      "city-mpg",
+      "highway-mpg",
+      "price"
+    ],
+    "corr_matrix": {
+      "symboling": {
+        "symboling": 1.0,
+        "width": -0.233,
+        "height": -0.541,
+        "engine-size": -0.106,
+        "city-mpg": -0.036,
+        "highway-mpg": 0.035,
+        "price": -0.086
+      },
+      "width": {
+        "symboling": -0.233,
+        "width": 1.0,
+        "height": 0.279,
+        "engine-size": 0.735,
+        "city-mpg": -0.643,
+        "highway-mpg": -0.677,
+        "price": 0.718
+      },
+      "height": {
+        "symboling": -0.541,
+        "width": 0.279,
+        "height": 1.0,
+        "engine-size": 0.067,
+        "city-mpg": -0.049,
+        "highway-mpg": -0.107,
+        "price": 0.132
+      },
+      "engine-size": {
+        "symboling": -0.106,
+        "width": 0.735,
+        "height": 0.067,
+        "engine-size": 1.0,
+        "city-mpg": -0.654,
+        "highway-mpg": -0.677,
+        "price": 0.853
+      },
+      "city-mpg": {
+        "symboling": -0.036,
+        "width": -0.643,
+        "height": -0.049,
+        "engine-size": -0.654,
+        "city-mpg": 1.0,
+        "highway-mpg": 0.971,
+        "price": -0.655
+      },
+      "highway-mpg": {
+        "symboling": 0.035,
+        "width": -0.677,
+        "height": -0.107,
+        "engine-size": -0.677,
+        "city-mpg": 0.971,
+        "highway-mpg": 1.0,
+        "price": -0.679
+      },
+      "price": {
+        "symboling": -0.086,
+        "width": 0.718,
+        "height": 0.132,
+        "engine-size": 0.853,
+        "city-mpg": -0.655,
+        "highway-mpg": -0.679,
+        "price": 1.0
+      }
+    }
+  },
+  "outliers": {
+    "multiplier": 1.5,
+    "per_column": {
+      "symboling": {
+        "q1": 0.0,
+        "q3": 2.0,
+        "lower_bound": -3.0,
+        "upper_bound": 5.0,
+        "n_outliers": 0,
+        "n_total": 205,
+        "outlier_ratio": 0.0
+      },
+      "width": {
+        "q1": 64.1,
+        "q3": 66.9,
+        "lower_bound": 59.9,
+        "upper_bound": 71.1,
+        "n_outliers": 8,
+        "n_total": 205,
+        "outlier_ratio": 0.039
+      },
+      "height": {
+        "q1": 52.0,
+        "q3": 55.5,
+        "lower_bound": 46.75,
+        "upper_bound": 60.75,
+        "n_outliers": 0,
+        "n_total": 205,
+        "outlier_ratio": 0.0
+      },
+      "engine-size": {
+        "q1": 97.0,
+        "q3": 141.0,
+        "lower_bound": 31.0,
+        "upper_bound": 207.0,
+        "n_outliers": 10,
+        "n_total": 205,
+        "outlier_ratio": 0.049
+      },
+      "city-mpg": {
+        "q1": 19.0,
+        "q3": 30.0,
+        "lower_bound": 2.5,
+        "upper_bound": 46.5,
+        "n_outliers": 2,
+        "n_total": 205,
+        "outlier_ratio": 0.01
+      },
+      "highway-mpg": {
+        "q1": 25.0,
+        "q3": 34.0,
+        "lower_bound": 11.5,
+        "upper_bound": 47.5,
+        "n_outliers": 3,
+        "n_total": 205,
+        "outlier_ratio": 0.015
+      },
+      "price": {
+        "q1": 7788.0,
+        "q3": 16500.0,
+        "lower_bound": -5280.0,
+        "upper_bound": 29568.0,
+        "n_outliers": 14,
+        "n_total": 205,
+        "outlier_ratio": 0.068
+      }
+    }
+  }
+}

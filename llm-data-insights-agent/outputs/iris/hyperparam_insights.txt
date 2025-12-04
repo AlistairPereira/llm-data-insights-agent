@@ -1,0 +1,37 @@
+**Summary:**
+
+* Algorithms tried: Logistic Regression
+* Best algorithm: Logistic Regression with penalty "l2" and C = 10.
+
+**Explanation of the reported metric:**
+
+* The reported metric is accuracy, which is a measure of how well a classification model predicts the correct class for each data point.
+* Accuracy ranges from 0 (worst) to 1 (best). A higher value indicates better performance. In this case, the best accuracy is 0.9933.
+
+**Practical interpretation:**
+
+* An accuracy of 0.9933 means that if you were to make a random guess on the class for each data point in the dataset, you would get correct only about 99.33% of the time.
+* In practical terms, this suggests that the Logistic Regression model with these hyperparameters is quite good at making accurate predictions.
+
+**Interpretation of tree-based and linear model hyperparameters:**
+
+**Tree-based models (Random Forest/Gradient Boosting):**
+
+* n_estimators: This controls how many decision trees are combined to make a prediction. Increasing this value can improve accuracy but also increases the risk of overfitting.
+* max_depth: This sets a maximum depth for each tree, limiting how complex the model becomes. Lower values may lead to underfitting, while higher values may lead to overfitting.
+* Overfitting occurs when the model is too complex and performs well on the training data but poorly on unseen data.
+
+**Linear models (Ridge/Lasso/Logistic Regression):**
+
+* regularization: This helps prevent overfitting by adding a penalty term to the loss function. Regularization can be either L1 (Lasso) or L2 (Ridge). Higher values of C (in Logistic Regression) or alpha (in Ridge and Lasso) increase the strength of regularization.
+* The role of regularization is to balance the trade-off between fitting the training data well and keeping the model simple.
+
+**Recommendation:**
+
+* Deploy the Logistic Regression model with penalty "l2" and C = 10, as it performed best in the hyperparameter search.
+* Future experiments could include:
+	+ Trying more trees in Random Forest models to see if this improves performance.
+	+ Using different learning rates for optimization algorithms (e.g., Adam) to improve convergence speed.
+	+ Collecting more data or feature engineering to provide additional information for the model.
+	+ Exploring other classification algorithms, such as Support Vector Machines (SVMs), to compare their performance.
+

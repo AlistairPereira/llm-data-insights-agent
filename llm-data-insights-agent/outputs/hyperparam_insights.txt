@@ -1,29 +1,33 @@
-**Summary**
+**Summary:**
 
-* We tried only one algorithm: Gradient Boosting Classifier.
-* The best performing algorithm had a metric value of 0.8866666666666666, which means an accuracy of approximately 88.7%.
+* The following algorithms were tried:
+ + Ridge
+ + Lasso
+ + ElasticNet
+* The best algorithm was ElasticNet with an RMSE (Root Mean Squared Error) of 4033.21.
+* The key hyperparameters for the best model are `l1_ratio = 0.3` and `alpha = 0.1668100537200059`.
 
-**Explanation of metrics**
+**Explanation:**
 
-* In classification problems like this one, the reported metric is accuracy, not RMSE (mean squared error). Accuracy measures the proportion of correctly classified instances.
-* An accuracy of 88.7% means that the model correctly predicted the species of about 88.7% of the samples in the dataset.
+* The reported metric, RMSE (Root Mean Squared Error), measures how well a regression model predicts continuous values. A lower value indicates better performance.
+* In practical terms, an RMSE of 4033.21 means that the model's predictions are on average 4033.21 units away from the actual value. This is a relatively high error rate and suggests that the model needs improvement.
 
-**Hyperparameter interpretation for tree-based models**
+**Hyperparameter Interpretation:**
 
-* **n_estimators**: Increasing n_estimators improves performance by adding more trees to the ensemble, but may also lead to overfitting if it gets too high. A higher value is better.
-* **max_depth**: Reducing max_depth prevents deep trees from memorizing the training data and reduces overfitting. A lower value is better.
-* **learning_rate**: A smaller learning rate allows for more iterations of gradient descent, improving performance but also increasing the risk of overfitting.
+* **Tree-based models (Random Forest / Gradient Boosting):**
+ + `n_estimators`: The number of decision trees in the model. Increasing this can improve performance but also increases overfitting risk.
+ + `max_depth`: The maximum depth of each tree. Increasing this can allow the model to capture more complex relationships, but also increases overfitting risk if not regularized properly.
+* **Linear models (Ridge, Lasso, Logistic Regression):**
+ + Regularization (alpha or C) controls how much the model shrinks the coefficients. A lower value means less shrinkage and potentially higher overfitting risk.
 
-**Hyperparameter interpretation for linear models**
+**Recommendation:**
 
-* **regularization (alpha or C)**: Regularization adds a penalty term to the loss function to prevent large weights. Alpha is used in L1 regularization and reduces feature importance, while C is used in L2 regularization and reduces model complexity. A smaller alpha or C value means less regularization, which can improve performance but also increases overfitting.
+* I would deploy the ElasticNet model with `l1_ratio = 0.3` and `alpha = 0.1668100537200059` because it provides a good balance between the two types of regularization (L1 and L2) and shows promising performance on this dataset.
 
-**Recommendation**
+**Future Experiment Ideas:**
 
-* Deploying the model with 300 n_estimators, max_depth = 4, learning_rate = 0.01, and no regularization (alpha = 0) for Gradient Boosting Classifier.
-* For future experiments:
- + Try increasing the number of trees to see if it improves performance without overfitting.
- + Experiment with different learning rates to find an optimal value that balances improvement in accuracy with reduction in overfitting.
- + Collect more data to increase the size and diversity of the dataset, which can help improve model performance on unseen samples.
- + Apply feature engineering techniques to extract more relevant features from the existing features, such as dimensionality reduction or transformation.
+* Try increasing or decreasing the `n_estimators` parameter in tree-based models to see if it improves performance.
+* Explore different learning rates for gradient boosting models to find an optimal value.
+* Collect more data to increase the sample size and potentially improve model performance.
+* Perform feature engineering to extract more relevant features from the dataset, such as interaction terms or polynomial transformations.
 

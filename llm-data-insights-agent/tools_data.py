@@ -3,6 +3,18 @@ import matplotlib.pyplot as plt
 from typing import Dict, Any
 import os
 
+import os
+
+def get_dataset_key_from_path(path: str) -> str:
+    """
+    Turn 'sample_data/cars.csv' -> 'cars'
+    Turn 'iris.csv'              -> 'iris'
+    Turn 'My Data.csv'           -> 'my_data'
+    """
+    base = os.path.basename(path)
+    name, _ = os.path.splitext(base)
+    return name.replace(" ", "_").lower()
+
 
 def load_dataset(path: str) -> pd.DataFrame:
     df = pd.read_csv(path)

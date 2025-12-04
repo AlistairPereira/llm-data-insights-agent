@@ -1,0 +1,35 @@
+Here are the answers in clear bullet points:
+
+**1. Description of the dataset:**
+
+* Rows: 205
+* Columns: 12 (symboling, normalized-losses, make, fuel-type, body-style, drive-wheels, engine-location, width, height, engine-type, engine-size, horsepower, city-mpg, highway-mpg, price)
+* Data types:
+ + Integers (symboling, engine-size, city-mpg, highway-mpg, price)
+ + Floating-point numbers (width, height, normalized-losses)
+ + Strings (make, fuel-type, body-style, drive-wheels, engine-location, horse-power)
+
+**2. Comment on data quality:**
+
+* Missing values are present in most columns, with the lowest percentage being 0% for symboling and make.
+* Outliers are detected in several columns, including width, height, engine-size, city-mpg, highway-mpg, and price.
+* Potential issue: The use of categorical variables (e.g. fuel-type, body-style) might lead to difficulties in modeling if not handled properly.
+
+**3. Important numeric insights:**
+
+* The average engine size is around 126.9 units, with a standard deviation of 41.6 units, indicating that most engines are relatively small.
+* The city and highway MPG ranges from 13 to 49 for city-mpg and 16 to 54 for highway-mpg, suggesting a mix of fuel-efficient and less efficient vehicles.
+* There is a moderate negative correlation between width and height (-0.541), indicating that wider cars tend to be shorter.
+
+**4. Notable outliers:**
+
+* In the width column, values above 71.1 (corresponding to the 99th percentile) are considered outliers, with 8 instances.
+* In the city-mpg column, values below 2.5 and above 46.5 are considered outliers, with 2 instances.
+* In the price column, values above 29568.0 and below -5280.0 are considered outliers, with 14 instances.
+
+**5. Follow-up analyses or questions:**
+
+* Investigate the relationship between fuel-type and engine-size to determine if more efficient engines are associated with certain types of fuel.
+* Explore the distribution of normalized-losses to understand what type of losses are being recorded.
+* Analyze the correlations between horsepower, city-mpg, highway-mpg, and price to identify potential relationships between these variables.
+

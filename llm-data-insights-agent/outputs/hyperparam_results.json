@@ -1,29 +1,47 @@
 {
-  "problem_type": "classification",
+  "problem_type": "regression",
   "experiments": [
     {
-      "algo_key": "gboost",
-      "algo_name": "GradientBoostingClassifier",
-      "metric_name": "accuracy",
-      "metric_value": 0.8866666666666666,
-      "higher_is_better": true,
+      "algo_key": "ridge",
+      "algo_name": "Ridge",
+      "metric_name": "rmse",
+      "metric_value": 4039.0001778008846,
+      "higher_is_better": false,
       "best_params": {
-        "n_estimators": 300,
-        "max_depth": 4,
-        "learning_rate": 0.01
+        "alpha": 7.742636826811277
+      }
+    },
+    {
+      "algo_key": "lasso",
+      "algo_name": "Lasso",
+      "metric_name": "rmse",
+      "metric_value": 4293.807098358088,
+      "higher_is_better": false,
+      "best_params": {
+        "alpha": 10.0
+      }
+    },
+    {
+      "algo_key": "elasticnet",
+      "algo_name": "ElasticNet",
+      "metric_name": "rmse",
+      "metric_value": 4033.214688699493,
+      "higher_is_better": false,
+      "best_params": {
+        "l1_ratio": 0.3,
+        "alpha": 0.1668100537200059
       }
     }
   ],
   "best_experiment": {
-    "algo_key": "gboost",
-    "algo_name": "GradientBoostingClassifier",
-    "metric_name": "accuracy",
-    "metric_value": 0.8866666666666666,
-    "higher_is_better": true,
+    "algo_key": "elasticnet",
+    "algo_name": "ElasticNet",
+    "metric_name": "rmse",
+    "metric_value": 4033.214688699493,
+    "higher_is_better": false,
     "best_params": {
-      "n_estimators": 300,
-      "max_depth": 4,
-      "learning_rate": 0.01
+      "l1_ratio": 0.3,
+      "alpha": 0.1668100537200059
     }
   }
 }
