@@ -201,15 +201,49 @@ def run_hyperparam_agent(
     print(f"[Hyperparam Agent] Hyperparameter insights saved to {insights_path}")
 
 
+# if __name__ == "__main__":
+#     # Usually you will call this via router,
+#     # but you can still call directly:
+#     #   python hyperparam_agent.py sample_data/cars.csv price
+#     if len(sys.argv) < 2:
+#         print("Usage: python hyperparam_agent.py <path_to_csv> [target_column]")
+#         sys.exit(1)
+
+#     csv_path = sys.argv[1]
+#     target = sys.argv[2] if len(sys.argv) >= 3 else None
+
+#     run_hyperparam_agent(csv_path, target_col=target, algo_list=None)
+
 if __name__ == "__main__":
-    # Usually you will call this via router,
-    # but you can still call directly:
+    # Usage:
+    #   python hyperparam_agent.py <path_to_csv> [target_column] [algo1 algo2 ...]
+    #
+    # Examples:
     #   python hyperparam_agent.py sample_data/cars.csv price
+    #       → auto mode (infer algorithms from model_report.json)
+    #
+    #   python hyperparam_agent.py sample_data/cars.csv price rf gbr
+    #       → manually tune only rf + gbr
+    #
+    #   python hyperparam_agent.py sample_data/iris.csv Species logreg
+    #       → tune only logistic regression
+
     if len(sys.argv) < 2:
-        print("Usage: python hyperparam_agent.py <path_to_csv> [target_column]")
+        print("Usage: python hyperparam_agent.py <path_to_csv> [target_column] [algos...]")
         sys.exit(1)
 
+    # First argument: file path
     csv_path = sys.argv[1]
+
+    # Second argument: target column (optional)
     target = sys.argv[2] if len(sys.argv) >= 3 else None
 
-    run_hyperparam_agent(csv_path, target_col=target, algo_list=None)
+    # Everything after the target column = algo_list (optional)
+    algo_list = sys.argv[3:] if len(sys.argv) > 3 else None
+
+    run_hyperparam_agent(
+        file_path=csv_path,
+        target_col=target,
+        algo_list=algo_list,
+    )
+
