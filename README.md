@@ -9,6 +9,7 @@ Generate a full PDF analytics report
 Ask a local LLM (Ollama / llama3.2) to explain all results in plain English
 
 **✨ Features**
+
 **🧹 EDA Agent**
 Cleans dataset (drop empty cols, forward/backward fill)
 Summary stats, missing %, dtypes, top categories
@@ -20,34 +21,40 @@ Saves all outputs inside:
 outputs/<dataset>/
 
 **🤖 Supervised Model Agent**
+
 **Supports:**
 Linear Regression
 Random Forest
 Gradient Boosting
 Logistic Regression
 KNN (Regressor/Classifier)
+
 **Features:**
 Uses cleaned data + EDA summary
 Prepares features/target (encoding + scaling)
 Trains the selected model
 Evaluates performance (RMSE, R², Accuracy, F1)
 LLM explanation of model + EDA together
+
 **Saves:**
 model_report.json
 model_insights.txt
 
 **🧩 Unsupervised Model Agent**
+
 **Supports:**
 PCA
 KMeans
 DBSCAN
 Agglomerative Clustering
+
 **LLM explains:**
 PCA variance and component meaning
 Cluster structures and metrics
 Correlation insights
 Outlier influence
 Practical use cases
+
 **Saves:**
 unsupervised_insights.txt
 
@@ -60,7 +67,9 @@ hyperparam_results.json
 hyperparam_insights.txt
 
 **🧭 Router Agent**
+
 **Understands natural-language commands such as:**
+
 "Run EDA on cars.csv"
 "Train a linear model to predict price"
 "Cluster using kmeans with 3 groups"
@@ -68,15 +77,20 @@ hyperparam_insights.txt
 Chooses correct agent → executes → saves results.
 
 **📄 Report Agent (PDF Generator)**
+
 Creates a clean PDF including:
 EDA summary + plots
 Model results + insights
 Hyperparameter tuning summary
 Unsupervised insights
+
 **Outputs:**
+
 outputs/report_cars.pdf
 outputs/report_iris.pdf
+
 **Uses dataset folders:**
+
 outputs/cars/
 outputs/iris/
 
