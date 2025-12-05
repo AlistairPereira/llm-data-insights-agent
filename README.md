@@ -104,8 +104,11 @@ outputs/report_iris.pdf
 outputs/cars/
 outputs/iris/
 
-**🏗️ Project Structure**
 
+
+## 📦 Project Structure
+
+```text
 llm-data-insights-agent/
 │
 ├── agents/                       # All high-level agents
@@ -118,12 +121,12 @@ llm-data-insights-agent/
 │
 ├── tools/                        # Core reusable ML/EDA utilities
 │   ├── tools_data.py             # Cleaning, summary, correlations, plots
-│   ├── tools_model.py            # Model prep, training, metrics
-│   ├── tools_unsupervised.py     # PCA, clustering utilities
+│   ├── tools_model.py            # Prep, training, metrics, feature importances
+│   ├── tools_unsupervised.py     # PCA + clustering utilities
 │   ├── tools_hyperparam.py       # Search spaces + tuning functions
 │   └── llm_local.py              # Wrapper for Ollama llama3.2
 │
-├── sample_data/                  # Example datasets to test with
+├── sample_data/                  # Example datasets
 │   ├── cars.csv
 │   └── iris.csv
 │
@@ -148,5 +151,6 @@ llm-data-insights-agent/
 │       ├── model_insights.txt
 │       └── report_iris.pdf
 │
-├── requirements.txt              # Dependencies
-└── README.md                     # Documentation
+├── requirements.txt
+└── README.md
+```
