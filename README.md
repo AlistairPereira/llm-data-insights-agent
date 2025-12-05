@@ -10,8 +10,8 @@ Ask a local LLM (Ollama / llama3.2) to explain all results in plain English
 
 **✨ Features**
 
-
 **🧹 EDA Agent**
+
 Cleans dataset (drop empty cols, forward/backward fill)
 Summary stats, missing %, dtypes, top categories
 Correlation matrix + correlation heatmap (corr_heatmap.png)
@@ -60,6 +60,7 @@ Practical use cases
 unsupervised_insights.txt
 
 **⚙️ Hyperparameter Tuning Agent**
+
 Auto-detects algorithm from last model run
 Or user can manually specify algorithms
 Uses RandomizedSearchCV
