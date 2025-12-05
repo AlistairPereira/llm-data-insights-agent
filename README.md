@@ -11,6 +11,7 @@ Ask a local LLM (Ollama / llama3.2) to explain all results in plain English
 
 **✨ Features**
 
+
 **🧹 EDA Agent**
 
 Cleans dataset (drop empty cols, forward/backward fill)
@@ -21,6 +22,7 @@ IQR-based outlier detection
 LLM insights explained by a local mode
 Saves all outputs inside:
 outputs/<dataset>/
+
 
 **🤖 Supervised Model Agent**
 
@@ -42,6 +44,7 @@ LLM explanation of model + EDA together
 model_report.json
 model_insights.txt
 
+
 **🧩 Unsupervised Model Agent**
 
 **Supports:**
@@ -60,6 +63,7 @@ Practical use cases
 **Saves:**
 unsupervised_insights.txt
 
+
 **⚙️ Hyperparameter Tuning Agent**
 
 Auto-detects algorithm from last model run
@@ -70,6 +74,7 @@ Uses RandomizedSearchCV
 hyperparam_results.json
 hyperparam_insights.txt
 
+
 **🧭 Router Agent**
 
 **Understands natural-language commands such as:**
@@ -79,6 +84,7 @@ hyperparam_insights.txt
 "Cluster using kmeans with 3 groups"
 "Tune the model on iris.csv"
 Chooses correct agent → executes → saves results.
+
 
 **📄 Report Agent (PDF Generator)**
 
