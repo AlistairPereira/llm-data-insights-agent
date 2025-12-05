@@ -10,6 +10,7 @@ Ask a local LLM (Ollama / llama3.2) to explain all results in plain English
 
 **✨ Features**
 
+
 **🧹 EDA Agent**
 Cleans dataset (drop empty cols, forward/backward fill)
 Summary stats, missing %, dtypes, top categories
@@ -62,6 +63,7 @@ unsupervised_insights.txt
 Auto-detects algorithm from last model run
 Or user can manually specify algorithms
 Uses RandomizedSearchCV
+
 **Saves:**
 hyperparam_results.json
 hyperparam_insights.txt
