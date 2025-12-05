@@ -1,73 +1,110 @@
-# LLM Data Insights Agent
+**LLM Data Insights Agent**
+A multi-agent, tool-using system that can:
+Run EDA with plots, correlations & outliers
+Train & evaluate supervised models (regression / classification)
+Run unsupervised learning (PCA, KMeans, DBSCAN, Agglomerative)
+Perform hyperparameter tuning
+Use a Router Agent to decide which agent to call based on a natural-language request
+Generate a full PDF analytics report
+Ask a local LLM (Ollama / llama3.2) to explain all results in plain English
 
-A **multi-agent, tool-using system** that can:
+**✨ Features**
+**🧹 EDA Agent**
+Cleans dataset (drop empty cols, forward/backward fill)
+Summary stats, missing %, dtypes, top categories
+Correlation matrix + correlation heatmap (corr_heatmap.png)
+Numeric histograms
+IQR-based outlier detection
+LLM insights explained by a local mode
+Saves all outputs inside:
+outputs/<dataset>/
 
-- Run **EDA with plots, correlations & outliers**
-- Train & evaluate **supervised models** (regression / classification)
-- Run **unsupervised learning** (PCA, KMeans, DBSCAN, Agglomerative)
-- Use a **Router Agent** to decide which agent to call based on a natural-language request  
-- Ask a **local LLM (Ollama / llama3.2)** to explain all results in plain English
+**🤖 Supervised Model Agent**
+**Supports:**
+Linear Regression
+Random Forest
+Gradient Boosting
+Logistic Regression
+KNN (Regressor/Classifier)
+**Features:**
+Uses cleaned data + EDA summary
+Prepares features/target (encoding + scaling)
+Trains the selected model
+Evaluates performance (RMSE, R², Accuracy, F1)
+LLM explanation of model + EDA together
+**Saves:**
+model_report.json
+model_insights.txt
 
----
+**🧩 Unsupervised Model Agent**
+**Supports:**
+PCA
+KMeans
+DBSCAN
+Agglomerative Clustering
+**LLM explains:**
+PCA variance and component meaning
+Cluster structures and metrics
+Correlation insights
+Outlier influence
+Practical use cases
+**Saves:**
+unsupervised_insights.txt
 
-## ✨ Features
+**⚙️ Hyperparameter Tuning Agent**
+Auto-detects algorithm from last model run
+Or user can manually specify algorithms
+Uses RandomizedSearchCV
+**Saves:**
+hyperparam_results.json
+hyperparam_insights.txt
 
-- 🧹 **EDA Agent**
-  - Cleaning (drop empty cols, forward/backward fill)
-  - Summary stats, missing %, dtypes, top categories
-  - Correlation matrix + correlation heatmap (`corr_heatmap.png`)
-  - IQR-based **outlier detection** for numeric columns
-  - EDA insights explained by a local LLM
+**🧭 Router Agent**
+**Understands natural-language commands such as:**
+"Run EDA on cars.csv"
+"Train a linear model to predict price"
+"Cluster using kmeans with 3 groups"
+"Tune the model on iris.csv"
+Chooses correct agent → executes → saves results.
 
-- 🤖 **Supervised Model Agent**
-  - Uses cleaned data + EDA summary
-  - Prepares features/target (encoding + scaling)  
-  - Trains model (baseline version now; easily extendable)
-  - Evaluates with metrics (e.g. RMSE, R², etc.)
-  - Uses LLM to explain model performance, feature importance & EDA together
+**📄 Report Agent (PDF Generator)**
+Creates a clean PDF including:
+EDA summary + plots
+Model results + insights
+Hyperparameter tuning summary
+Unsupervised insights
+**Outputs:**
+outputs/report_cars.pdf
+outputs/report_iris.pdf
+**Uses dataset folders:**
+outputs/cars/
+outputs/iris/
 
-- 🧩 **Unsupervised Model Agent**
-  - Shared preprocessing for unsupervised tasks  
-  - Algorithms:
-    - PCA (components + explained variance)
-    - KMeans (labels, centers, metrics)
-    - DBSCAN (clusters, noise ratio)
-    - Agglomerative clustering
-  - LLM explains structure, clusters & metrics using EDA + algorithm report
-
-- 🧭 **Router Agent**
-  - Takes a **natural-language request**
-  - Asks LLM to output a strict JSON:
-    - `action` → `"eda" | "model" | "unsupervised"`
-    - `file_path`, `target_column`, `algorithm`, and algorithm params
-  - Calls the correct agent with parsed parameters
-
-- 🧠 **Local LLM integration (Ollama)**
-  - Uses `ollama run llama3.2` via `subprocess`
-  - All heavy data work is done in Python tools;  
-    LLM is used only for **reasoning & explanation**.
-
----
-
-## 🏗️ Project Structure
-
-```text
+**🏗️ Project Structure**
 llm-data-insights-agent/
-├── eda_agent.py                 # EDA Agent (summary + correlations + outliers + plots + LLM)
-├── model_agent.py               # Supervised model agent
-├── unsupervised_model_agent.py  # Unsupervised model agent (PCA / KMeans / DBSCAN / Agglomerative)
-├── router_agent.py              # Router agent: chooses which agent to call based on user request
-├── tools_data.py                # Low-level EDA tools (cleaning, summary, correlations, outliers, plots)
-├── tools_model.py               # Supervised model tools (prep, training, metrics, feature importances)
-├── tools_unsupervised.py        # Unsupervised tools (prep, PCA, KMeans, DBSCAN, Agglomerative)
-├── llm_local.py                 # Thin wrapper around `ollama run <model>`
+├── eda_agent.py
+├── model_agent.py
+├── unsupervised_model_agent.py
+├── hyperparam_agent.py
+├── router_agent.py
+├── report_agent.py
+│
+├── tools_data.py
+├── tools_model.py
+├── tools_unsupervised.py
+├── tools_hyperparam.py
+├── llm_local.py
+│
 ├── sample_data/
-│   └── cars.csv                 # Example dataset
+│   ├── cars.csv
+│   └── iris.csv
+│
 ├── outputs/
-│   ├── histograms.png
-│   ├── corr_heatmap.png
-│   ├── eda_insights.txt
-│   ├── model_insights.txt
-│   └── unsupervised_insights.txt
+│   ├── cars/
+│   ├── iris/
+│   ├── report_cars.pdf
+│   ├── report_iris.pdf
+│   └── ...
+│
 ├── requirements.txt
 └── .gitignore
