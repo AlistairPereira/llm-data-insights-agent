@@ -105,30 +105,48 @@ outputs/cars/
 outputs/iris/
 
 **🏗️ Project Structure**
+
 llm-data-insights-agent/
-├── eda_agent.py
-├── model_agent.py
-├── unsupervised_model_agent.py
-├── hyperparam_agent.py
-├── router_agent.py
-├── report_agent.py
 │
-├── tools_data.py
-├── tools_model.py
-├── tools_unsupervised.py
-├── tools_hyperparam.py
-├── llm_local.py
+├── agents/                       # All high-level agents
+│   ├── eda_agent.py              # Exploratory Data Analysis
+│   ├── model_agent.py            # Supervised ML (regression/classification)
+│   ├── unsupervised_agent.py     # PCA, KMeans, DBSCAN, Agglomerative
+│   ├── hyperparam_agent.py       # Hyperparameter tuning
+│   ├── router_agent.py           # Natural language → agent router
+│   └── report_agent.py           # Full PDF report generator
 │
-├── sample_data/
+├── tools/                        # Core reusable ML/EDA utilities
+│   ├── tools_data.py             # Cleaning, summary, correlations, plots
+│   ├── tools_model.py            # Model prep, training, metrics
+│   ├── tools_unsupervised.py     # PCA, clustering utilities
+│   ├── tools_hyperparam.py       # Search spaces + tuning functions
+│   └── llm_local.py              # Wrapper for Ollama llama3.2
+│
+├── sample_data/                  # Example datasets to test with
 │   ├── cars.csv
 │   └── iris.csv
 │
-├── outputs/
+├── outputs/                      # Auto-generated results (per dataset)
 │   ├── cars/
-│   ├── iris/
-│   ├── report_cars.pdf
-│   ├── report_iris.pdf
-│   └── ...
+│   │   ├── eda_summary.json
+│   │   ├── histograms.png
+│   │   ├── corr_heatmap.png
+│   │   ├── model_report.json
+│   │   ├── hyperparam_results.json
+│   │   ├── unsupervised_insights.txt
+│   │   ├── model_insights.txt
+│   │   └── report_cars.pdf
+│   │
+│   └── iris/
+│       ├── eda_summary.json
+│       ├── histograms.png
+│       ├── corr_heatmap.png
+│       ├── model_report.json
+│       ├── hyperparam_results.json
+│       ├── unsupervised_insights.txt
+│       ├── model_insights.txt
+│       └── report_iris.pdf
 │
-├── requirements.txt
-└── .gitignore
+├── requirements.txt              # Dependencies
+└── README.md                     # Documentation
