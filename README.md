@@ -1,4 +1,5 @@
 **LLM Data Insights Agent**
+
 A multi-agent, tool-using system that can:
 Run EDA with plots, correlations & outliers
 Train & evaluate supervised models (regression / classification)
